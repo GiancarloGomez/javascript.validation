@@ -1,0 +1,18 @@
+{
+ "name": "Validation",
+  "version": "1.0.1",
+  "description": "Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)",
+  "homepage": "https://github.com/GiancarloGomez/javascript.validation",
+  "author": "Giancarlo Gomez",
+  "license": "MIT",
+  "main": "dist/validation.js",
+   "repository": {
+    "type": "git",
+    "url": "git@github.com/GiancarloGomez/javascript.validation.git"
+  },
+  "keywords": [
+    "jquery",
+    "bootstrap",
+    "validation"
+  ]
+}
