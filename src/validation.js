@@ -6,16 +6,6 @@
  * @author      Giancarlo Gomez
  */
 
-$(function(){
-    // simple form validation
-    $('form.simple-validation').each(function(){
-        simpleValidation(this,false);
-    });
-    $('form.simple-validation-alert').each(function(){
-        simpleValidation(this,true);
-    });
-});
-
 var Validate = {
     'float': function(value){
         return (/^[\-+]?[0-9]*\.?[0-9]+$/).test(value);
@@ -70,7 +60,7 @@ function simpleValidation(form,doalert){
             o.form = this;
             // focus and select on required field
             if (doalert){
-                alert('Attention:' + o.message.replace(/<li>/gm,'\n').replace(/<\/li>/gm,''));
+                window.alert('Attention:' + o.message.replace(/<li>/gm,'\n').replace(/<\/li>/gm,''));
                 formButtons(false,this);
             } else {
                 openDialog(o);
@@ -133,9 +123,13 @@ function validateForm(form){
 }
 
 // make sure dialog exists
-function createDialog(){
+function createDialog(dofade){
+    if(dofade === undefined)
+        dofade = true;
     if(document.getElementById('dialog') === null)
-        $('body').append('<div class="modal fade" id="dialog"></div>');
+        $('body').append('<div class="modal' +(dofade === true ? ' fade':'') + '" id="dialog"></div>');
+    else
+        $('#dialog').each(function(){ if (dofade === true){$(this).addClass('fade');}else{$(this).removeClass('fade');}});
 }
 
 // handle form buttons display
@@ -164,18 +158,29 @@ function formButtons(a,b){
 
 // open a dialog with actions
 function openActionDialog(o){
-    createDialog();
+    if(o.dofade === undefined)
+        o.dofade = true;
+    createDialog(o.dofade);
+    // new globals
+    if (o.includeconfirmbtn === undefined)
+        o.includeconfirmbtn = true;
+    if (o.noheader === undefined)
+        o.noheader = false;
     // create dialog text
-    var d = '<div class="modal-header"><a href="#" class="close" data-dismiss="modal">&times;</a><h3>' + (o.header || 'Attention') + '</h3></div>' +
+    var d = (o.noheader === false ? '<div class="modal-header"><a href="#" class="close" data-dismiss="modal">&times;</a><h3>' + (o.header || 'Attention') + '</h3></div>' : '')+
             '<div class="modal-body"><div class="' + ((o.noerror === undefined || o.noerror === false) ? 'text-error bold' :'') +'">' + o.message + '</div></div>' +
             '<div class="modal-footer"><div class="hide"><a href="#" class="btn btn-info nolink"><i class="icon-refresh icon-spin"></i> Processing Request</a></div>' +
-            '<div class="show"><a href="#" class="btn btn-confirm ' + (o.confirmButtonColorClass === undefined ? 'btn-primary': o.confirmButtonColorClass) + '">' +
+            '<div class="show">';
+    if (o.includeconfirmbtn) {
+        d +='<a href="#" class="btn btn-confirm ' + (o.confirmButtonColorClass === undefined ? 'btn-primary': o.confirmButtonColorClass) + '">' +
             (o.confirmButtonText === undefined ? 'Yes' : o.confirmButtonText) +
-            '</a><a href="#" class="btn btn-danger" data-dismiss="modal">' +
-            (o.cancelButtonText === undefined ? 'No' : o.cancelButtonText) +
-            '</a></div></div>';
+            '</a>';
+    }
+    d += '<a href="#" class="btn btn-danger" data-dismiss="modal">' +
+         (o.cancelButtonText === undefined ? 'No' : o.cancelButtonText) +
+         '</a></div></div>';
     // open dialog
-    var dl = $('#dialog').html(parseForBootStrap(d));
+    var dl = $('#dialog').html(parseForBootstrap(d));
     // overwrite dimensions if passed
     if (o.width !== undefined)
         dl.css({'max-width': o.width,'width': o.width,'margin-left':-(o.width/2)});
@@ -201,7 +206,7 @@ function openActionDialog(o){
                 newWindow.focus();
                 dl.modal('hide');
             }else{
-                location=o.parent.href;
+                window.location=o.parent.href;
             }
         // is form
         }else if (document[o.parent] !== 'undefined'){
@@ -214,9 +219,14 @@ function openActionDialog(o){
 
 // open regular dialog
 function openDialog(o){
-    createDialog();
+    if(o.dofade === undefined)
+        o.dofade = true;
+    createDialog(o.dofade);
+    // new globals
+    if (o.noheader === undefined)
+        o.noheader = false;
     // create dialog text
-    var d =  '<div class="modal-header"><a href="#" class="close" data-dismiss="modal">&times;</a><h3>' + (o.header || 'Attention') + '</h3></div>';
+    var d = (o.noheader === false ? '<div class="modal-header"><a href="#" class="close" data-dismiss="modal">&times;</a><h3>' + (o.header || 'Attention') + '</h3></div>' : '');
     if (o.noerror === undefined || o.noerror === false)
         d += '<div class="modal-body"><ul class="text-error bold">' + o.message + '</ul></div>';
     else
@@ -255,17 +265,28 @@ function openDialog(o){
 }
 
 function getBootstrapEvent(event){
-    if (typeof(BootstrapVersion) == 'number' && BootstrapVersion >= 3)
+    if (typeof(BootstrapVersion) === 'number' && BootstrapVersion >= 3)
        event += '.bs.modal';
-    return event;	
+    return event;
 }
 
 function parseForBootstrap(d){
 // check if we define a bootstrap version and it is higher than or equal to 3
-    if (typeof(BootstrapVersion) == 'number' && BootstrapVersion >= 3)
+    if (typeof(BootstrapVersion) === 'number' && BootstrapVersion >= 3)
         d = '<div class="modal-dialog"><div class="modal-content">' + d.replace('text-error','text-danger') + '</div></div>';
     return d;
 }
 
 // showHide function - pass 2 id's and there view state will be toggled
 function showHide(a, b) { $('#' + b).hide(); $('#' + a).show(); }
+
+// initialize
+$(function(){
+    // simple form validation
+    $('form.simple-validation').each(function(){
+        simpleValidation(this,false);
+    });
+    $('form.simple-validation-alert').each(function(){
+        simpleValidation(this,true);
+    });
+});
