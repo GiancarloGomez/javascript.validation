@@ -6,28 +6,35 @@
  * @author      Giancarlo Gomez
  */
 
+// !Validate
+/**
+* @hint Global Validate object which can be used to validate a string to a specified format
+*/
 var Validate = {
+    'date': function(value){
+        return (/^(0[1-9]|1[012])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)?\d\d$/).test(value);
+    },
+    'dateTime': function(value){
+        return !(/Invalid|NaN/).test(new Date(value));
+    },
+    'email': function(value){
+        return (/^[_a-zA-Z0-9\-]+((\.[_a-zA-Z0-9\-]+)*|(\+[_a-zA-Z0-9\-]+)*)*@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*(\.[a-zA-Z]{2,4})$/i).test(value);
+    },
     'float': function(value){
         return (/^[\-+]?[0-9]*\.?[0-9]+$/).test(value);
     },
-    'integer' : function (value){
+    'integer': function (value){
         return (/^\d+$/).test(value);
     },
-    'email' : function(value){
-        return (/^[_a-zA-Z0-9\-]+((\.[_a-zA-Z0-9\-]+)*|(\+[_a-zA-Z0-9\-]+)*)*@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*(\.[a-zA-Z]{2,4})$/i).test(value);
-    },
-    'dateTime' : function(value){
-        return !(/Invalid|NaN/).test(new Date(value));
-    },
-    'date' : function(value){
-        return (/^(0[1-9]|1[012])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)?\d\d$/).test(value);
-    },
-    'slug' : function(value){
+    'slug': function(value){
         // at least 3 alpha numerics no spaces and no periods
         return (/[\w]{3,}[\-]?$/).test(value) && !(/\s/).test(value) && !(/\./).test(value);
     }
 };
 
+/**
+* @hint Pass in a form and bind the submit event to the validation process (validateForm)
+*/
 function simpleValidation(form,doalert){
     if (form === undefined)
         return false;
@@ -52,9 +59,8 @@ function simpleValidation(form,doalert){
             if(typeof(e) === 'function'){
                 o = e($(this),o);
             }
-        }catch(a){
-            // console.log(a);
         }
+        catch(a){/* ignore error */}
         // notification or submit
         if (o.err.length) {
             o.form = this;
@@ -73,7 +79,9 @@ function simpleValidation(form,doalert){
     });
 }
 
-// function validate the fields
+/**
+* @hint The validation process bound by simpleValidation or calling directly, requires passing a form
+*/
 function validateForm(form){
     var o = {
             message : '',
@@ -84,45 +92,48 @@ function validateForm(form){
 
     $(form).find('.required input,.required select,.required textarea,input.required, select.required, textarea.required').each(function () {
         // get the type and name
-        var t = $(this).attr('type'),
-            n = $(this).attr('name'),
-            v = $(this).parents('.control-group, .form-group').find('label');
+        var me      = $(this),
+            type    = me.attr('type'),
+            name    = me.attr('name'),
+            label   = me.parents('.control-group, .form-group').find('label');
         // skip me if I am disabled
         if (this.disabled)
             return;
         // handle tinymce
-        if ($(this).hasClass('mceEditor'))
-            tinyMCE.get(this.id).save(); // auto save any mceEditor value back to textarea
+        if (me.hasClass('mceEditor') && window.tinyMCE !== undefined )
+            window.tinyMCE.get(this.id).save(); // auto save any mceEditor value back to textarea
         if (
-                ((t === 'checkbox' || t === 'radio') && !$('input[name='+n+']').is(':checked') && o.checks.indexOf(n) < 0) ||
-                ($(this).hasClass('email') && !Validate.email($(this).val())) ||
-                ($(this).hasClass('integer') && !Validate.integer($(this).val())) ||
-                ($(this).hasClass('float') && !Validate.float($(this).val())) ||
-                ($(this).hasClass('timepicker') && !Validate.dateTime($(this).val())) ||
-                ($(this).hasClass('datepicker') && !Validate.date($(this).val())) ||
-                ($(this).hasClass('slug') && !Validate.slug($(this).val())) ||
-                $(this).val() === '' ||
-                ($(this).hasClass('match') && $(this).attr('data-match') && $(this).val() !== $('#' + $(this).attr('data-match')).val()) ||
-                ($(this).hasClass('regex') && $(this).attr('data-regex') && !this.value.match(new RegExp($(this).attr('data-regex'))))
+                ((type === 'checkbox' || type === 'radio') && !$('input[name='+name+']').is(':checked') && o.checks.indexOf(name) < 0) ||
+                (me.hasClass('email') && !Validate.email(me.val())) ||
+                (me.hasClass('integer') && !Validate.integer(me.val())) ||
+                (me.hasClass('float') && !Validate.float(me.val())) ||
+                (me.hasClass('timepicker') && !Validate.dateTime(me.val())) ||
+                (me.hasClass('datepicker') && !Validate.date(me.val())) ||
+                (me.hasClass('slug') && !Validate.slug(me.val())) ||
+                me.val() === '' ||
+                (me.hasClass('match') && me.data('match') && me.val() !== $('#' + me.data('match')).val()) ||
+                (me.hasClass('regex') && me.data('regex') && !this.value.match(new RegExp(me.data('regex'))))
         ){
-            if ($(this).val() !== '' && $(this).attr('data-regex-title') && !this.value.match(new RegExp($(this).attr('data-regex')))){
-                o.message += '<li>' + $(this).attr('data-regex-title') + '</li>';
-            }else if ($(this).val() !== '' && $(this).hasClass('match') && $(this).attr('data-match-title')){
-                o.message += '<li>' + $(this).attr('data-match-title') + '</li>';
-            }else if ($(this).attr('title')){
-                o.message += '<li>' + $(this).attr('title') + '</li>';
+            if (me.val() !== '' && me.data('regex-title') && !this.value.match(new RegExp(me.data('regex')))){
+                o.message += '<li>' + me.data('regex-title') + '</li>';
+            }else if (me.val() !== '' && me.hasClass('match') && me.data('match-title')){
+                o.message += '<li>' + me.data('match-title') + '</li>';
+            }else if (me.attr('title')){
+                o.message += '<li>' + me.attr('title') + '</li>';
             }else{
-                o.message += '<li>' +  (v.length === 0 ? n : v.text()) + ' is a required field</li>';
+                o.message += '<li>' +  (label.length === 0 ? name : label.text()) + ' is a required field</li>';
             }
-            o.err.push($(this));
+            o.err.push(me);
             // push to the checks array so we only evaluate once
-            o.checks.push(n);
+            o.checks.push(name);
         }
     });
     return o;
 }
 
-// make sure dialog exists
+/**
+* @hint Checks if a dialog div exists and if not it creates it
+*/
 function createDialog(dofade){
     if(dofade === undefined)
         dofade = true;
@@ -132,7 +143,9 @@ function createDialog(dofade){
         $('#dialog').each(function(){ if (dofade === true){$(this).addClass('fade');}else{$(this).removeClass('fade');}});
 }
 
-// handle form buttons display
+/**
+* @hint Show/Hide form process
+*/
 function formButtons(a,b){
     var runGlobal = false;
     // this allows us to pass in and search for items with the class name instead (multiple forms in page way)
@@ -156,7 +169,9 @@ function formButtons(a,b){
     }
 }
 
-// open a dialog with actions
+/**
+* @hint Open a dialog with actions
+*/
 function openActionDialog(o){
     if(o.dofade === undefined)
         o.dofade = true;
@@ -191,14 +206,14 @@ function openActionDialog(o){
     // add destroy on close
     if (o.destroy === undefined || o.destroy === true)
         dl.on(getBootstrapEvent('hidden'),function(){$(this).remove();});
-
+    // confirm button action
     dl.find('a.btn-confirm').click(function(){
         // hide/show buttons
         dl.find('.modal-footer div.show').hide();
         dl.find('.modal-footer div.hide').show();
         // is function
         if (o.callback && typeof(o.callback) === 'function'){
-                o.callback(o.parent || dl);
+            o.callback(o.parent || dl);
         // is link
         }else if (typeof(o.parent) === 'object' && o.parent.href !== 'undefined'){
             if(o.parent.target.indexOf('blank') >= 0 || o.parent.target.indexOf('new') >= 0){
@@ -217,7 +232,9 @@ function openActionDialog(o){
     });
 }
 
-// open regular dialog
+/**
+* @hint Open a dialog
+*/
 function openDialog(o){
     if(o.dofade === undefined)
         o.dofade = true;
@@ -225,6 +242,10 @@ function openDialog(o){
     // new globals
     if (o.noheader === undefined)
         o.noheader = false;
+    if (o.dostatic === undefined)
+        o.dostatic = false;
+    if (o.background === undefined)
+        o.background = '';
     // create dialog text
     var d = (o.noheader === false ? '<div class="modal-header"><a href="#" class="close" data-dismiss="modal">&times;</a><h3>' + (o.header || 'Attention') + '</h3></div>' : '');
     if (o.noerror === undefined || o.noerror === false)
@@ -244,7 +265,13 @@ function openDialog(o){
     if (o.height !== undefined)
         dl.css({'max-height':o.height,'height':o.height,'margin-top':-(o.height/2)});
     // open modal
-    dl.modal({backdrop:true,show:true,keyboard:true});
+    if (o.dostatic === true)
+        dl.modal({backdrop:'static',show:true,keyboard:false});
+    else
+        dl.modal({backdrop:true,show:true,keyboard:true});
+    // change color
+    if (o.background !== '')
+        dl.next().css('background-color',o.background);
     // fix for iphone view
     dl.on(getBootstrapEvent('shown'),function(){
         if (window.innerHeight <= 480)
@@ -264,12 +291,18 @@ function openDialog(o){
     }
 }
 
+/**
+* @hint Gets the event to listen for depending on Bootstrap Version
+*/
 function getBootstrapEvent(event){
     if (typeof(BootstrapVersion) === 'number' && BootstrapVersion >= 3)
        event += '.bs.modal';
     return event;
 }
 
+/**
+* @hint Prepares a modal depending on Bootstrap Version
+*/
 function parseForBootstrap(d){
 // check if we define a bootstrap version and it is higher than or equal to 3
     if (typeof(BootstrapVersion) === 'number' && BootstrapVersion >= 3)
@@ -277,15 +310,18 @@ function parseForBootstrap(d){
     return d;
 }
 
-// showHide function - pass 2 id's and there view state will be toggled
+/**
+* @hint Show/Hide elements - pass 2 elements and there view state will be toggled
+*/
 function showHide(a, b) { $('#' + b).hide(); $('#' + a).show(); }
 
-// initialize
+// !Initialize
 $(function(){
-    // simple form validation
+    // !Simple form validation with modal
     $('form.simple-validation').each(function(){
         simpleValidation(this,false);
     });
+    // !Simple form validation with alert
     $('form.simple-validation-alert').each(function(){
         simpleValidation(this,true);
     });

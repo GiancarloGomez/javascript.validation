@@ -1,6 +1,6 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.0.1 - released 2014-02-09 21:59
+ // v1.0.1 - released 2014-03-15 01:23
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation
  // ----------------------------------------------------------------------------
@@ -9,20 +9,20 @@
  // ----------------------------------------------------------------------------
 
 var Validate = {
+    date: function(value) {
+        return /^(0[1-9]|1[012])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)?\d\d$/.test(value);
+    },
+    dateTime: function(value) {
+        return !/Invalid|NaN/.test(new Date(value));
+    },
+    email: function(value) {
+        return /^[_a-zA-Z0-9\-]+((\.[_a-zA-Z0-9\-]+)*|(\+[_a-zA-Z0-9\-]+)*)*@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*(\.[a-zA-Z]{2,4})$/i.test(value);
+    },
     "float": function(value) {
         return /^[\-+]?[0-9]*\.?[0-9]+$/.test(value);
     },
     integer: function(value) {
         return /^\d+$/.test(value);
-    },
-    email: function(value) {
-        return /^[_a-zA-Z0-9\-]+((\.[_a-zA-Z0-9\-]+)*|(\+[_a-zA-Z0-9\-]+)*)*@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*(\.[a-zA-Z]{2,4})$/i.test(value);
-    },
-    dateTime: function(value) {
-        return !/Invalid|NaN/.test(new Date(value));
-    },
-    date: function(value) {
-        return /^(0[1-9]|1[012])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)?\d\d$/.test(value);
     },
     slug: function(value) {
         return /[\w]{3,}[\-]?$/.test(value) && !/\s/.test(value) && !/\./.test(value);
@@ -69,21 +69,21 @@ function validateForm(form) {
         form: form
     };
     $(form).find(".required input,.required select,.required textarea,input.required, select.required, textarea.required").each(function() {
-        var t = $(this).attr("type"), n = $(this).attr("name"), v = $(this).parents(".control-group, .form-group").find("label");
+        var me = $(this), type = me.attr("type"), name = me.attr("name"), label = me.parents(".control-group, .form-group").find("label");
         if (this.disabled) return;
-        if ($(this).hasClass("mceEditor")) tinyMCE.get(this.id).save();
-        if ((t === "checkbox" || t === "radio") && !$("input[name=" + n + "]").is(":checked") && o.checks.indexOf(n) < 0 || $(this).hasClass("email") && !Validate.email($(this).val()) || $(this).hasClass("integer") && !Validate.integer($(this).val()) || $(this).hasClass("float") && !Validate.float($(this).val()) || $(this).hasClass("timepicker") && !Validate.dateTime($(this).val()) || $(this).hasClass("datepicker") && !Validate.date($(this).val()) || $(this).hasClass("slug") && !Validate.slug($(this).val()) || $(this).val() === "" || $(this).hasClass("match") && $(this).attr("data-match") && $(this).val() !== $("#" + $(this).attr("data-match")).val() || $(this).hasClass("regex") && $(this).attr("data-regex") && !this.value.match(new RegExp($(this).attr("data-regex")))) {
-            if ($(this).val() !== "" && $(this).attr("data-regex-title") && !this.value.match(new RegExp($(this).attr("data-regex")))) {
-                o.message += "<li>" + $(this).attr("data-regex-title") + "</li>";
-            } else if ($(this).val() !== "" && $(this).hasClass("match") && $(this).attr("data-match-title")) {
-                o.message += "<li>" + $(this).attr("data-match-title") + "</li>";
-            } else if ($(this).attr("title")) {
-                o.message += "<li>" + $(this).attr("title") + "</li>";
+        if (me.hasClass("mceEditor") && window.tinyMCE !== undefined) window.tinyMCE.get(this.id).save();
+        if ((type === "checkbox" || type === "radio") && !$("input[name=" + name + "]").is(":checked") && o.checks.indexOf(name) < 0 || me.hasClass("email") && !Validate.email(me.val()) || me.hasClass("integer") && !Validate.integer(me.val()) || me.hasClass("float") && !Validate.float(me.val()) || me.hasClass("timepicker") && !Validate.dateTime(me.val()) || me.hasClass("datepicker") && !Validate.date(me.val()) || me.hasClass("slug") && !Validate.slug(me.val()) || me.val() === "" || me.hasClass("match") && me.data("match") && me.val() !== $("#" + me.data("match")).val() || me.hasClass("regex") && me.data("regex") && !this.value.match(new RegExp(me.data("regex")))) {
+            if (me.val() !== "" && me.data("regex-title") && !this.value.match(new RegExp(me.data("regex")))) {
+                o.message += "<li>" + me.data("regex-title") + "</li>";
+            } else if (me.val() !== "" && me.hasClass("match") && me.data("match-title")) {
+                o.message += "<li>" + me.data("match-title") + "</li>";
+            } else if (me.attr("title")) {
+                o.message += "<li>" + me.attr("title") + "</li>";
             } else {
-                o.message += "<li>" + (v.length === 0 ? n : v.text()) + " is a required field</li>";
+                o.message += "<li>" + (label.length === 0 ? name : label.text()) + " is a required field</li>";
             }
-            o.err.push($(this));
-            o.checks.push(n);
+            o.err.push(me);
+            o.checks.push(name);
         }
     });
     return o;
@@ -168,6 +168,8 @@ function openDialog(o) {
     if (o.dofade === undefined) o.dofade = true;
     createDialog(o.dofade);
     if (o.noheader === undefined) o.noheader = false;
+    if (o.dostatic === undefined) o.dostatic = false;
+    if (o.background === undefined) o.background = "";
     var d = o.noheader === false ? '<div class="modal-header"><a href="#" class="close" data-dismiss="modal">&times;</a><h3>' + (o.header || "Attention") + "</h3></div>" : "";
     if (o.noerror === undefined || o.noerror === false) d += '<div class="modal-body"><ul class="text-error bold">' + o.message + "</ul></div>"; else d += '<div class="modal-body" style="max-height:100% !important;">' + o.message + "</div>";
     if (o.nofooter === undefined && o.customfooter === undefined || o.nofooter === false) d += '<div class="modal-footer"><a href="#" class="btn btn-primary" data-dismiss="modal">OK</a></div>';
@@ -183,11 +185,16 @@ function openDialog(o) {
         height: o.height,
         "margin-top": -(o.height / 2)
     });
-    dl.modal({
+    if (o.dostatic === true) dl.modal({
+        backdrop: "static",
+        show: true,
+        keyboard: false
+    }); else dl.modal({
         backdrop: true,
         show: true,
         keyboard: true
     });
+    if (o.background !== "") dl.next().css("background-color", o.background);
     dl.on(getBootstrapEvent("shown"), function() {
         if (window.innerHeight <= 480) $(this).css({
             top: window.scrollY + 10
