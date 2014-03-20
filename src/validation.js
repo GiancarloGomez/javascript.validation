@@ -188,6 +188,7 @@ function createDialogFooter(o,withactions){
     if (o.customfooter !== '')
         str += o.customfooter;
     str += '</div>';
+    return str;
 }
 
 /**
