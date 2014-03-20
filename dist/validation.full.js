@@ -1,6 +1,6 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.0.1 - released 2014-03-20 14:05
+ // v1.0.1 - released 2014-03-20 14:17
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation
  // ----------------------------------------------------------------------------
@@ -130,6 +130,7 @@ function createDialogFooter(o, withactions) {
 function setDialogDefaults(o) {
     var defaults = {
         background: "",
+        callback: null,
         cancelButtonColorClass: "btn-danger",
         cancelButtonText: "No",
         confirmButtonColorClass: "btn-primary",
@@ -138,16 +139,16 @@ function setDialogDefaults(o) {
         destroy: true,
         dofade: true,
         dostatic: false,
+        err: [],
+        form: null,
         height: 0,
         includeconfirmbtn: true,
+        message: "",
         noerror: false,
         nofooter: false,
         noheader: false,
-        width: 0,
-        callback: null,
         parent: null,
-        err: [],
-        form: null
+        width: 0
     };
     return $.extend(defaults, o);
 }
