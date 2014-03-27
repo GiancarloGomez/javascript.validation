@@ -1,6 +1,6 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.0.1 - released 2014-03-20 14:17
+ // v1.0.1 - released 2014-03-27 02:10
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation
  // ----------------------------------------------------------------------------
@@ -10,7 +10,7 @@
 
 var Validate = {
     date: function(value) {
-        return /^(0[1-9]|1[012])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)?\d\d$/.test(value);
+        return !/Invalid|NaN/.test(new Date(value));
     },
     dateTime: function(value) {
         return !/Invalid|NaN/.test(new Date(value));
@@ -72,7 +72,7 @@ function validateForm(form) {
         var me = $(this), type = me.attr("type"), name = me.attr("name"), label = me.parents(".control-group, .form-group").find("label");
         if (this.disabled) return;
         if (me.hasClass("mceEditor") && window.tinyMCE !== undefined) window.tinyMCE.get(this.id).save();
-        if ((type === "checkbox" || type === "radio") && !$("input[name=" + name + "]").is(":checked") && o.checks.indexOf(name) < 0 || me.hasClass("email") && !Validate.email(me.val()) || me.hasClass("integer") && !Validate.integer(me.val()) || me.hasClass("float") && !Validate.float(me.val()) || me.hasClass("timepicker") && !Validate.dateTime(me.val()) || me.hasClass("datepicker") && !Validate.date(me.val()) || me.hasClass("slug") && !Validate.slug(me.val()) || me.val() === "" || me.hasClass("match") && me.data("match") && me.val() !== $("#" + me.data("match")).val() || me.hasClass("regex") && me.data("regex") && !this.value.match(new RegExp(me.data("regex")))) {
+        if ((type === "checkbox" || type === "radio") && !$("input[name=" + name + "]").is(":checked") && o.checks.indexOf(name) < 0 || me.hasClass("email") && !Validate.email(me.val()) || me.hasClass("integer") && !Validate.integer(me.val()) || me.hasClass("float") && !Validate.float(me.val()) || (me.hasClass("timepicker") || me.hasClass("time")) && !Validate.dateTime(me.val()) || (me.hasClass("datepicker") || me.hasClass("date") || me.hasClass("datetime")) && !Validate.date(me.val()) || me.hasClass("slug") && !Validate.slug(me.val()) || me.val() === "" || me.hasClass("match") && me.data("match") && me.val() !== $("#" + me.data("match")).val() || me.hasClass("regex") && me.data("regex") && !this.value.match(new RegExp(me.data("regex")))) {
             if (me.val() !== "" && me.data("regex-title") && !this.value.match(new RegExp(me.data("regex")))) {
                 o.message += "<li>" + me.data("regex-title") + "</li>";
             } else if (me.val() !== "" && me.hasClass("match") && me.data("match-title")) {
@@ -89,15 +89,11 @@ function validateForm(form) {
     return o;
 }
 
-function createDialog(dofade) {
-    if (dofade === undefined) dofade = true;
-    if (document.getElementById("dialog") === null) $("body").append('<div class="modal' + (dofade === true ? " fade" : "") + '" id="dialog"></div>'); else $("#dialog").each(function() {
-        if (dofade === true) {
-            $(this).addClass("fade");
-        } else {
-            $(this).removeClass("fade");
-        }
-    });
+function createDialog(o) {
+    if (document.getElementById("dialog") === null) $("body").append('<div id="dialog"></div>');
+    var dl = $("#dialog").removeClass().addClass("modal");
+    if (o.dofade === true) dl.addClass("fade");
+    if (o.dialogclass !== "") dl.addClass(o.dialogclass);
 }
 
 function createDialogHeader(o) {
@@ -105,7 +101,7 @@ function createDialogHeader(o) {
 }
 
 function createDialogBody(o, aslist) {
-    var str = '<div class="modal-body" style="max-height:100% !important;">';
+    var str = '<div class="modal-body" style="' + (o.maxheight === true ? "max-height:100% !important;" : "") + '">';
     if (aslist === true && o.noerror === false) str += '<ul class="text-error bold">' + o.message + "</ul>"; else str += '<div class="' + (o.noerror === false ? "text-error bold" : "") + '">' + o.message + "</div>";
     str += "</div>";
     return str;
@@ -137,12 +133,15 @@ function setDialogDefaults(o) {
         confirmButtonText: "Yes",
         customfooter: "",
         destroy: true,
+        dialogclass: "",
         dofade: true,
         dostatic: false,
         err: [],
         form: null,
         height: 0,
         includeconfirmbtn: true,
+        keyboard: false,
+        maxheight: false,
         message: "",
         noerror: false,
         nofooter: false,
@@ -167,11 +166,11 @@ function activateDialog(o, dl) {
     if (o.dostatic === true) dl.modal({
         backdrop: "static",
         show: true,
-        keyboard: false
+        keyboard: o.keyboard
     }); else dl.modal({
         backdrop: true,
         show: true,
-        keyboard: true
+        keyboard: o.keyboard
     });
     if (o.background !== "") dl.next().css("background-color", o.background);
     dl.on(getBootstrapEvent("shown"), function() {
@@ -198,7 +197,7 @@ function formButtons(a, b) {
 function openActionDialog(o) {
     var d, dl;
     o = setDialogDefaults(o);
-    createDialog(o.dofade);
+    createDialog(o);
     d = createDialogHeader(o) + createDialogBody(o, false) + createDialogFooter(o, true);
     dl = $("#dialog").html(parseForBootstrap(d));
     activateDialog(o, dl);
@@ -229,7 +228,7 @@ function openActionDialog(o) {
 function openDialog(o) {
     var d, dl;
     o = setDialogDefaults(o);
-    createDialog(o.dofade);
+    createDialog(o);
     d = createDialogHeader(o) + createDialogBody(o, true) + createDialogFooter(o, false);
     dl = $("#dialog").html(parseForBootstrap(d));
     activateDialog(o, dl);

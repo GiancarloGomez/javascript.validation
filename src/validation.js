@@ -12,7 +12,7 @@
 */
 var Validate = {
     'date': function(value){
-        return (/^(0[1-9]|1[012])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)?\d\d$/).test(value);
+        return !(/Invalid|NaN/).test(new Date(value));
     },
     'dateTime': function(value){
         return !(/Invalid|NaN/).test(new Date(value));
@@ -107,8 +107,8 @@ function validateForm(form){
                 (me.hasClass('email') && !Validate.email(me.val())) ||
                 (me.hasClass('integer') && !Validate.integer(me.val())) ||
                 (me.hasClass('float') && !Validate.float(me.val())) ||
-                (me.hasClass('timepicker') && !Validate.dateTime(me.val())) ||
-                (me.hasClass('datepicker') && !Validate.date(me.val())) ||
+                ((me.hasClass('timepicker') || me.hasClass('time')) && !Validate.dateTime(me.val())) ||
+                ((me.hasClass('datepicker') || me.hasClass('date') || me.hasClass('datetime')) && !Validate.date(me.val())) ||
                 (me.hasClass('slug') && !Validate.slug(me.val())) ||
                 me.val() === '' ||
                 (me.hasClass('match') && me.data('match') && me.val() !== $('#' + me.data('match')).val()) ||
@@ -134,13 +134,18 @@ function validateForm(form){
 /**
 * @hint Checks if a dialog div exists and if not it creates it
 */
-function createDialog(dofade){
-    if(dofade === undefined)
-        dofade = true;
+function createDialog(o){
+    // create if not exists
     if(document.getElementById('dialog') === null)
-        $('body').append('<div class="modal' +(dofade === true ? ' fade':'') + '" id="dialog"></div>');
-    else
-        $('#dialog').each(function(){ if (dofade === true){$(this).addClass('fade');}else{$(this).removeClass('fade');}});
+        $('body').append('<div id="dialog"></div>');
+    // get it so we can add it and remove all classes to make sure we start fresh
+    var dl = $('#dialog').removeClass().addClass('modal');
+    // handle if fade on
+    if (o.dofade === true)
+        dl.addClass('fade');
+    // handle if extra class
+    if (o.dialogclass !== '')
+        dl.addClass(o.dialogclass);
 }
 
 /**
@@ -154,7 +159,7 @@ function createDialogHeader(o){
 * @hint Create dialog body
 */
 function createDialogBody(o,aslist){
-    var str =  '<div class="modal-body" style="max-height:100% !important;">';
+    var str =  '<div class="modal-body" style="' + (o.maxheight === true ? 'max-height:100% !important;' : '') + '">';
     if (aslist === true && o.noerror === false)
         str += '<ul class="text-error bold">' + o.message + '</ul>';
     else
@@ -205,12 +210,15 @@ function setDialogDefaults(o){
             confirmButtonText       : 'Yes',
             customfooter            : '',
             destroy                 : true,
+            dialogclass             : '',
             dofade                  : true,
             dostatic                : false,
             err                     : [],
             form                    : null,
             height                  : 0,
             includeconfirmbtn       : true,
+            keyboard                : false,
+            maxheight               : false,
             message                 : '',
             noerror                 : false,
             nofooter                : false,
@@ -233,9 +241,9 @@ function activateDialog(o,dl){
         dl.css({'max-height':o.height,'height':o.height,'margin-top':-(o.height/2)});
     // open modal
     if (o.dostatic === true)
-        dl.modal({backdrop:'static',show:true,keyboard:false});
+        dl.modal({backdrop:'static',show:true,keyboard:o.keyboard});
     else
-        dl.modal({backdrop:true,show:true,keyboard:true});
+        dl.modal({backdrop:true,show:true,keyboard:o.keyboard});
     // change color
     if (o.background !== '')
         dl.next().css('background-color',o.background);
@@ -280,7 +288,7 @@ function openActionDialog(o){
     // set globals
     o = setDialogDefaults(o);
     // create dialog
-    createDialog(o.dofade);
+    createDialog(o);
     // create dialog text
     d = createDialogHeader(o) + createDialogBody(o,false) + createDialogFooter(o,true);
     // insert dialog text
@@ -328,7 +336,7 @@ function openDialog(o){
     // set globals
     o = setDialogDefaults(o);
     // create dialog
-    createDialog(o.dofade);
+    createDialog(o);
     // create dialog text
     d = createDialogHeader(o) + createDialogBody(o,true) + createDialogFooter(o,false);
     // insert dialog text
