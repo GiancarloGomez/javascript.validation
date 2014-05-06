@@ -193,6 +193,9 @@ function createDialogFooter(o,withactions){
     if (o.customfooter !== '')
         str += o.customfooter;
     str += '</div>';
+    // reset if no footer
+    if (o.nofooter === true)
+        str = '';
     return str;
 }
 
@@ -361,7 +364,7 @@ function openDialog(o){
 }
 
 /**
-* @hint Gets the Font Awesome icon prefix to use 
+* @hint Gets the Font Awesome icon prefix to use
 */
 function getFontAwesomePrefix(){
     var fa = {required:'',prefix:'icon-'};

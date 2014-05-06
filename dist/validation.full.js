@@ -1,6 +1,6 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.0.1 - released 2014-03-27 02:10
+ // v1.0.1 - released 2014-05-01 21:57
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation
  // ----------------------------------------------------------------------------
@@ -120,6 +120,7 @@ function createDialogFooter(o, withactions) {
     }
     if (o.customfooter !== "") str += o.customfooter;
     str += "</div>";
+    if (o.nofooter === true) str = "";
     return str;
 }
 
