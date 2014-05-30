@@ -177,7 +177,7 @@ function createDialogFooter(o,withactions){
 
     if (withactions === true)
     {
-        str +=  '<div class="hide"><a href="#" class="btn btn-info nolink"><i class="'+ fa.required + fa.prefix + 'refresh ' + fa.prefix + 'spin"></i> Processing Request</a></div><div class="show">';
+        str +=  '<div class="hide"><button class="btn btn-info" disabled="disabled"><i class="'+ fa.required + fa.prefix + 'refresh ' + fa.prefix + 'spin"></i> Processing Request</button></div><div class="show">';
         // include confirm button
         if (o.includeconfirmbtn === true) {
             str +='<a href="#" class="btn btn-confirm ' + o.confirmButtonColorClass + '">' + o.confirmButtonText + '</a>';
