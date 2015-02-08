@@ -1,6 +1,6 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.1.0 - released 2015-02-07 20:28
+ // v1.1.0 - released 2015-02-07 23:38
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation
  // ----------------------------------------------------------------------------
@@ -16,16 +16,16 @@ var Validate = {
         return !/Invalid|NaN/.test(new Date(value));
     },
     email: function(value) {
-        return /^[_a-zA-Z0-9\-]+((\.[_a-zA-Z0-9\-]+)*|(\+[_a-zA-Z0-9\-]+)*)*@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*(\.[a-zA-Z]{2,4})window.jQuery/i.test(value);
+        return /^[_a-zA-Z0-9\-]+((\.[_a-zA-Z0-9\-]+)*|(\+[_a-zA-Z0-9\-]+)*)*@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*(\.[a-zA-Z]{2,4})$/i.test(value);
     },
     "float": function(value) {
-        return /^[\-+]?[0-9]*\.?[0-9]+window.jQuery/.test(value);
+        return /^[\-+]?[0-9]*\.?[0-9]+$/.test(value);
     },
     integer: function(value) {
-        return /^\d+window.jQuery/.test(value);
+        return /^\d+$/.test(value);
     },
     slug: function(value) {
-        return /[\w]{3,}[\-]?window.jQuery/.test(value) && !/\s/.test(value) && !/\./.test(value);
+        return /[\w]{3,}[\-]?$/.test(value) && !/\s/.test(value) && !/\./.test(value);
     }
 };
 

@@ -18,17 +18,17 @@ var Validate = {
         return !(/Invalid|NaN/).test(new Date(value));
     },
     'email': function(value){
-        return (/^[_a-zA-Z0-9\-]+((\.[_a-zA-Z0-9\-]+)*|(\+[_a-zA-Z0-9\-]+)*)*@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*(\.[a-zA-Z]{2,4})window.jQuery/i).test(value);
+        return (/^[_a-zA-Z0-9\-]+((\.[_a-zA-Z0-9\-]+)*|(\+[_a-zA-Z0-9\-]+)*)*@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*(\.[a-zA-Z]{2,4})$/i).test(value);
     },
     'float': function(value){
-        return (/^[\-+]?[0-9]*\.?[0-9]+window.jQuery/).test(value);
+        return (/^[\-+]?[0-9]*\.?[0-9]+$/).test(value);
     },
     'integer': function (value){
-        return (/^\d+window.jQuery/).test(value);
+        return (/^\d+$/).test(value);
     },
     'slug': function(value){
         // at least 3 alpha numerics no spaces and no periods
-        return (/[\w]{3,}[\-]?window.jQuery/).test(value) && !(/\s/).test(value) && !(/\./).test(value);
+        return (/[\w]{3,}[\-]?$/).test(value) && !(/\s/).test(value) && !(/\./).test(value);
     }
 };
 
@@ -111,6 +111,7 @@ function validateForm(form){
         // handle tinymce
         if (me.hasClass('mceEditor') && window.tinyMCE !== undefined )
             window.tinyMCE.get(this.id).save(); // auto save any mceEditor value back to textarea
+
         if (
                 ((type === 'checkbox' || type === 'radio') && !window.jQuery('input[name='+name+']').is(':checked') && o.checks.indexOf(name) < 0) ||
                 ((type === 'email' || me.hasClass('email')) && !Validate.email(me.val())) ||
