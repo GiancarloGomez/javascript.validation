@@ -1,4 +1,4 @@
 javascript.validation
 =====================
 
-A simple validation library that requires jQuery and Bootstrap 2.3.3 Modal
+A simple validation library that requires jQuery, Bootstrap 2+ (w/ Modal JS) and FontAwesome 3+
