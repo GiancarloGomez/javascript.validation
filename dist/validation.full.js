@@ -1,10 +1,10 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.0.1 - released 2014-05-30 14:59
+ // v1.1.0 - released 2015-02-07 20:18
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation
  // ----------------------------------------------------------------------------
- // Copyright (C) 2010-2014 Giancarlo Gomez
+ // Copyright (C) 2010-2015 Giancarlo Gomez
  // http://giancarlogomez.com/
  // ----------------------------------------------------------------------------
 
@@ -16,23 +16,28 @@ var Validate = {
         return !/Invalid|NaN/.test(new Date(value));
     },
     email: function(value) {
-        return /^[_a-zA-Z0-9\-]+((\.[_a-zA-Z0-9\-]+)*|(\+[_a-zA-Z0-9\-]+)*)*@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*(\.[a-zA-Z]{2,4})$/i.test(value);
+        return /^[_a-zA-Z0-9\-]+((\.[_a-zA-Z0-9\-]+)*|(\+[_a-zA-Z0-9\-]+)*)*@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*(\.[a-zA-Z]{2,4})window.jQuery/i.test(value);
     },
     "float": function(value) {
-        return /^[\-+]?[0-9]*\.?[0-9]+$/.test(value);
+        return /^[\-+]?[0-9]*\.?[0-9]+window.jQuery/.test(value);
     },
     integer: function(value) {
-        return /^\d+$/.test(value);
+        return /^\d+window.jQuery/.test(value);
     },
     slug: function(value) {
-        return /[\w]{3,}[\-]?$/.test(value) && !/\s/.test(value) && !/\./.test(value);
+        return /[\w]{3,}[\-]?window.jQuery/.test(value) && !/\s/.test(value) && !/\./.test(value);
     }
 };
 
-function simpleValidation(form, doalert) {
+var FormButtons = {
+    process: "frmPrc",
+    submit: "frmBtn"
+};
+
+function simpleValidation(form, doAlert) {
     if (form === undefined) return false;
-    if (doalert === undefined) doalert = false;
-    $(form).submit(function() {
+    if (doAlert === undefined) doAlert = false;
+    window.jQuery(form).submit(function() {
         var o = {
             message: "",
             err: [],
@@ -41,14 +46,14 @@ function simpleValidation(form, doalert) {
         formButtons(true, this);
         o = validateForm(this);
         try {
-            var e = window[$(this).data("extend-validation")];
+            var e = window[window.jQuery(this).data("extend-validation")];
             if (typeof e === "function") {
-                o = e($(this), o);
+                o = e(window.jQuery(this), o);
             }
         } catch (a) {}
         if (o.err.length) {
             o.form = this;
-            if (doalert) {
+            if (doAlert) {
                 window.alert("Attention:" + o.message.replace(/<li>/gm, "\n").replace(/<\/li>/gm, ""));
                 formButtons(false, this);
             } else {
@@ -68,15 +73,17 @@ function validateForm(form) {
         checks: [],
         form: form
     };
-    $(form).find(".required input,.required select,.required textarea,input.required, select.required, textarea.required").each(function() {
-        var me = $(this), type = me.attr("type"), name = me.attr("name"), label = me.parents(".control-group, .form-group").find("label");
+    window.jQuery(form).find(".required input,.required select,.required textarea,input.required, select.required, textarea.required").each(function() {
+        var me = window.jQuery(this), type = me.attr("type"), name = me.attr("name"), label = me.parents(".control-group, .form-group").find("label");
         if (this.disabled) return;
         if (me.hasClass("mceEditor") && window.tinyMCE !== undefined) window.tinyMCE.get(this.id).save();
-        if ((type === "checkbox" || type === "radio") && !$("input[name=" + name + "]").is(":checked") && o.checks.indexOf(name) < 0 || me.hasClass("email") && !Validate.email(me.val()) || me.hasClass("integer") && !Validate.integer(me.val()) || me.hasClass("float") && !Validate.float(me.val()) || (me.hasClass("timepicker") || me.hasClass("time")) && !Validate.dateTime(me.val()) || (me.hasClass("datepicker") || me.hasClass("date") || me.hasClass("datetime")) && !Validate.date(me.val()) || me.hasClass("slug") && !Validate.slug(me.val()) || me.val() === "" || me.hasClass("match") && me.data("match") && me.val() !== $("#" + me.data("match")).val() || me.hasClass("regex") && me.data("regex") && !this.value.match(new RegExp(me.data("regex")))) {
+        if ((type === "checkbox" || type === "radio") && !window.jQuery("input[name=" + name + "]").is(":checked") && o.checks.indexOf(name) < 0 || (type === "email" || me.hasClass("email")) && !Validate.email(me.val()) || (type === "number" || me.hasClass("integer")) && !Validate.integer(me.val()) || me.hasClass("float") && !Validate.float(me.val()) || (me.hasClass("timepicker") || me.hasClass("time")) && !Validate.dateTime(me.val()) || (me.hasClass("datepicker") || me.hasClass("date") || me.hasClass("datetime")) && !Validate.date(me.val()) || me.hasClass("slug") && !Validate.slug(me.val()) || me.val() === "" || me.hasClass("match") && me.data("match") && me.val() !== window.jQuery("#" + me.data("match")).val() || me.hasClass("regex") && me.data("regex") && !this.value.match(new RegExp(me.data("regex")))) {
             if (me.val() !== "" && me.data("regex-title") && !this.value.match(new RegExp(me.data("regex")))) {
                 o.message += "<li>" + me.data("regex-title") + "</li>";
             } else if (me.val() !== "" && me.hasClass("match") && me.data("match-title")) {
                 o.message += "<li>" + me.data("match-title") + "</li>";
+            } else if (me.data("title")) {
+                o.message += "<li>" + me.data("title") + "</li>";
             } else if (me.attr("title")) {
                 o.message += "<li>" + me.attr("title") + "</li>";
             } else {
@@ -90,37 +97,53 @@ function validateForm(form) {
 }
 
 function createDialog(o) {
-    if (document.getElementById("dialog") === null) $("body").append('<div id="dialog"></div>');
-    var dl = $("#dialog").removeClass().addClass("modal");
+    if (document.getElementById("dialog") === null) {
+        window.jQuery("body").append('<div id="dialog"></div>');
+    } else if (document.getElementById("dialog").style.display !== "none") {
+        window.jQuery("body").find("#dialog, .modal-backdrop").remove().end().append('<div id="dialog"></div>');
+    }
+    var dl = window.jQuery("#dialog").removeClass().addClass("modal");
     if (o.dofade === true) dl.addClass("fade");
     if (o.dialogclass !== "") dl.addClass(o.dialogclass);
 }
 
 function createDialogHeader(o) {
-    return o.noheader === false ? '<div class="modal-header"><a href="#" class="close" data-dismiss="modal">&times;</a><h3>' + (o.header || "Attention") + "</h3></div>" : "";
+    var headingTag = getBootstrapVersion() >= 3 ? "h4" : "h3";
+    return o.noheader === false ? '<div class="modal-header"><a href="#" class="close" data-dismiss="modal">&times;</a><' + headingTag + ' class="modal-title">' + (o.header || "Attention") + "</" + headingTag + "></div>" : "";
 }
 
-function createDialogBody(o, aslist) {
-    var str = '<div class="modal-body" style="' + (o.maxheight === true ? "max-height:100% !important;" : "") + '">';
-    if (aslist === true && o.noerror === false) str += '<ul class="text-error bold">' + o.message + "</ul>"; else str += '<div class="' + (o.noerror === false ? "text-error bold" : "") + '">' + o.message + "</div>";
-    str += "</div>";
-    return str;
-}
-
-function createDialogFooter(o, withactions) {
-    var str = '<div class="modal-footer">', fa = getFontAwesomePrefix();
-    if (withactions === true) {
-        str += '<div class="hide"><button class="btn btn-info" disabled="disabled"><i class="' + fa.required + fa.prefix + "refresh " + fa.prefix + 'spin"></i> Processing Request</button></div><div class="show">';
-        if (o.includeconfirmbtn === true) {
-            str += '<a href="#" class="btn btn-confirm ' + o.confirmButtonColorClass + '">' + o.confirmButtonText + "</a>";
-        }
-        str += '<a href="#" class="btn ' + o.cancelButtonColorClass + '" data-dismiss="modal">' + o.cancelButtonText + "</a></div>";
-    } else if (o.nofooter === false) {
-        str += '<a href="#" class="btn ' + o.confirmButtonColorClass + '" data-dismiss="modal">OK</a>';
+function createDialogBody(o) {
+    var bodyClass = o.noerror === false ? "text-error" : "", bodyStyle = "", asList = o.message.indexOf("<li>") !== -1 && o.message.indexOf("<ul>") === -1, tag = asList === true ? "ul" : "div", height = 0;
+    if (o.noheader === false) height += 70;
+    if (o.nofooter === false) height += 70;
+    if (getBootstrapVersion() >= 3) {
+        if (o.width !== 0) bodyStyle += "width:" + o.width + "px;";
+        if (o.height !== 0) bodyStyle += "height:" + (o.height - height) + "px;";
+    } else {
+        if (o.maxheight === true) bodyStyle = "max-height:100% !important;";
+        if (o.height !== 0) bodyStyle += "height:" + (o.height - height) + "px;";
     }
-    if (o.customfooter !== "") str += o.customfooter;
-    str += "</div>";
-    if (o.nofooter === true) str = "";
+    if (bodyStyle !== "") bodyStyle = 'style="' + bodyStyle + '"';
+    return '<div class="modal-body"' + bodyStyle + ">" + "<" + tag + ' class="' + bodyClass + '">' + o.message + "</" + tag + ">" + "</div>";
+}
+
+function createDialogFooter(o, withActions) {
+    var str = "", fa = getFontAwesomePrefix();
+    if (o.nofooter !== true) {
+        str = '<div class="modal-footer">';
+        if (o.customfooter !== "") {
+            str += o.customfooter;
+        } else if (withActions === true) {
+            str += '<div class="hide"><button class="btn btn-info" disabled="disabled"><i class="' + fa.required + fa.prefix + "refresh " + fa.prefix + 'spin"></i> Processing Request</button></div><div class="show">';
+            if (o.includeconfirmbtn === true) {
+                str += '<a href="#" class="btn btn-confirm ' + o.confirmButtonColorClass + '">' + o.confirmButtonText + "</a>";
+            }
+            str += '<a href="#" class="btn ' + o.cancelButtonColorClass + '" data-dismiss="modal">' + o.cancelButtonText + "</a></div>";
+        } else {
+            str += '<a href="#" class="btn ' + o.confirmButtonColorClass + '" data-dismiss="modal">' + o.confirmText + "</a>";
+        }
+        str += "</div>";
+    }
     return str;
 }
 
@@ -132,6 +155,7 @@ function setDialogDefaults(o) {
         cancelButtonText: "No",
         confirmButtonColorClass: "btn-primary",
         confirmButtonText: "Yes",
+        confirmText: "OK",
         customfooter: "",
         destroy: true,
         dialogclass: "",
@@ -139,6 +163,7 @@ function setDialogDefaults(o) {
         dostatic: false,
         err: [],
         form: null,
+        header: null,
         height: 0,
         includeconfirmbtn: true,
         keyboard: false,
@@ -150,20 +175,26 @@ function setDialogDefaults(o) {
         parent: null,
         width: 0
     };
-    return $.extend(defaults, o);
+    return window.jQuery.extend(defaults, o);
 }
 
 function activateDialog(o, dl) {
-    if (o.width !== 0) dl.css({
-        "max-width": o.width,
-        width: o.width,
-        "margin-left": -(o.width / 2)
-    });
-    if (o.height !== 0) dl.css({
-        "max-height": o.height,
-        height: o.height,
-        "margin-top": -(o.height / 2)
-    });
+    if (getBootstrapVersion() < 3) {
+        if (o.width !== 0) dl.css({
+            "max-width": o.width,
+            width: o.width,
+            "margin-left": -(o.width / 2)
+        });
+        if (o.height !== 0) dl.css({
+            "max-height": o.height,
+            height: o.height
+        });
+    } else if (o.width !== 0) {
+        if (o.width !== 0) dl.find(".modal-dialog").css({
+            "max-width": o.width,
+            width: o.width
+        });
+    }
     if (o.dostatic === true) dl.modal({
         backdrop: "static",
         show: true,
@@ -175,23 +206,22 @@ function activateDialog(o, dl) {
     });
     if (o.background !== "") dl.next().css("background-color", o.background);
     dl.on(getBootstrapEvent("shown"), function() {
-        if (window.innerHeight <= 480) $(this).css({
+        if (window.innerHeight <= 480) window.jQuery(this).css({
             top: window.scrollY + 10
         });
     });
 }
 
-function formButtons(a, b) {
+function formButtons(theState, theForm) {
     var runGlobal = false;
-    if (b !== undefined) {
-        if (b.id === "") b.id = "un_" + new Date().getTime();
-        runGlobal = $("#" + b.id + " .frmPrc").length === 0;
-        if (runGlobal === false) {
-            if (a === true) showHide(b.id + " .frmPrc", b.id + " .frmBtn"); else showHide(b.id + " .frmBtn", b.id + " .frmPrc");
-        }
+    if (theForm !== undefined) {
+        if (theForm.id === "") theForm.id = "un_" + new Date().getTime();
+        runGlobal = window.jQuery("#" + theForm.id + " ." + FormButtons.process).length === 0;
     }
-    if (runGlobal === true) {
-        if (a === true) showHide("frmPrc", "frmBtn"); else showHide("frmBtn", "frmPrc");
+    if (runGlobal === false && theForm !== undefined) {
+        if (theState === true) showHide(theForm.id + " ." + FormButtons.process, theForm.id + " ." + FormButtons.submit); else showHide(theForm.id + " ." + FormButtons.submit, theForm.id + " ." + FormButtons.process);
+    } else {
+        if (theState === true) showHide(FormButtons.process, FormButtons.submit); else showHide(FormButtons.submit, FormButtons.process);
     }
 }
 
@@ -199,15 +229,21 @@ function openActionDialog(o) {
     var d, dl;
     o = setDialogDefaults(o);
     createDialog(o);
-    d = createDialogHeader(o) + createDialogBody(o, false) + createDialogFooter(o, true);
-    dl = $("#dialog").html(parseForBootstrap(d));
+    d = createDialogHeader(o) + createDialogBody(o) + createDialogFooter(o, true);
+    dl = window.jQuery("#dialog").html(parseForBootstrap(d));
     activateDialog(o, dl);
     if (o.destroy === true) dl.on(getBootstrapEvent("hidden"), function() {
-        $(this).remove();
+        window.jQuery(this).remove();
     });
     dl.find("a.btn-confirm").click(function() {
-        dl.find(".modal-footer div.show").hide();
-        dl.find(".modal-footer div.hide").show();
+        var btnProcess = dl.find(".modal-footer div.hide"), btnSubmit = dl.find(".modal-footer div.show");
+        if (getBootstrapVersion() >= 3) {
+            btnProcess.removeClass("hide");
+            btnSubmit.removeClass("show").addClass("hide");
+        } else {
+            btnProcess.show();
+            btnSubmit.hide();
+        }
         if (o.callback && typeof o.callback === "function") {
             o.callback(o.parent || dl);
         } else if (o.parent !== null && typeof o.parent === "object" && o.parent.href !== "undefined") {
@@ -218,9 +254,10 @@ function openActionDialog(o) {
             } else {
                 window.location = o.parent.href;
             }
-        } else if (o.parent !== null && document[o.parent] !== "undefined") {
+        } else if (o.parent !== null) {
             formButtons(true);
-            document[o.parent].submit();
+            var frm = document[o.parent] || document.getElementById(o.parent);
+            if (frm !== undefined) frm.submit();
         }
         return false;
     });
@@ -230,18 +267,18 @@ function openDialog(o) {
     var d, dl;
     o = setDialogDefaults(o);
     createDialog(o);
-    d = createDialogHeader(o) + createDialogBody(o, true) + createDialogFooter(o, false);
-    dl = $("#dialog").html(parseForBootstrap(d));
+    d = createDialogHeader(o) + createDialogBody(o) + createDialogFooter(o, false);
+    dl = window.jQuery("#dialog").html(parseForBootstrap(d));
     activateDialog(o, dl);
     if (o.err.length > 0 && o.form !== null) {
         dl.on(getBootstrapEvent("hidden"), function() {
             formButtons(false, o.form);
             o.err[0].focus().select();
-            if (o.destroy === true) $(this).remove();
+            if (o.destroy === true) window.jQuery(this).remove();
         });
     } else {
         if (o.destroy === true) dl.on(getBootstrapEvent("hidden"), function() {
-            $(this).remove();
+            window.jQuery(this).remove();
         });
     }
 }
@@ -251,7 +288,7 @@ function getFontAwesomePrefix() {
         required: "",
         prefix: "icon-"
     };
-    if (typeof FontAwesomeVersion === "number" && FontAwesomeVersion >= 4) fa = {
+    if (getFontAwesomeVersion() >= 4) fa = {
         required: "fa ",
         prefix: "fa-"
     };
@@ -259,25 +296,38 @@ function getFontAwesomePrefix() {
 }
 
 function getBootstrapEvent(event) {
-    if (typeof BootstrapVersion === "number" && BootstrapVersion >= 3) event += ".bs.modal";
+    if (getBootstrapVersion() >= 3) event += ".bs.modal";
     return event;
 }
 
 function parseForBootstrap(d) {
-    if (typeof BootstrapVersion === "number" && BootstrapVersion >= 3) d = '<div class="modal-dialog"><div class="modal-content">' + d.replace("text-error", "text-danger") + "</div></div>";
+    if (getBootstrapVersion() >= 3) d = '<div class="modal-dialog"><div class="modal-content">' + d.replace("text-error", "text-danger") + "</div></div>";
     return d;
 }
 
 function showHide(a, b) {
-    $("#" + b).hide();
-    $("#" + a).show();
+    if (getBootstrapVersion() >= 3) {
+        window.jQuery("#" + b).addClass("hide");
+        window.jQuery("#" + a).removeClass("hide");
+    } else {
+        window.jQuery("#" + b).hide();
+        window.jQuery("#" + a).show();
+    }
 }
 
-$(function() {
-    $("form.simple-validation").each(function() {
+function getBootstrapVersion() {
+    return typeof BootstrapVersion === "number" ? BootstrapVersion : 3;
+}
+
+function getFontAwesomeVersion() {
+    return typeof FontAwesomeVersion === "number" ? FontAwesomeVersion : 4;
+}
+
+window.jQuery(function() {
+    window.jQuery("form.simple-validation").each(function() {
         simpleValidation(this, false);
     });
-    $("form.simple-validation-alert").each(function() {
+    window.jQuery("form.simple-validation-alert").each(function() {
         simpleValidation(this, true);
     });
 });

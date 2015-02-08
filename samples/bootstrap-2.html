@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Validation BootStrap 2 Example</title>
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css">
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css">
+	<link rel="stylesheet" href="./forms.css">
+</head>
+<body>
+
+	<div class="container">
+		<div class="page-header">
+			<h1>Validation and Dialog Examples</h1>
+		</div>
+
+		<!-- novalidate attribute is only in place to disable HTML5 validation -->
+
+		<form class="form-horizontal simple-validation" id="frmExample" novalidate>
+
+			<div class="control-group required">
+				<label for="name" class="control-label">Name</label>
+				<div class="controls">
+					<input type="text" class="input-block-level" id="name" placeholder="Enter your name" data-title="Please enter your name">
+				</div>
+			</div>
+			<div class="control-group required">
+				<label for="emailaddress" class="control-label">Email</label>
+				<div class="controls">
+					<input type="email" class="input-block-level" id="emailaddress" placeholder="Enter email" data-title="Please enter a valid Email">
+				</div>
+			</div>
+			<div class="control-group required">
+				<label for="age" class="control-label">Age</label>
+				<div class="controls">
+					<input type="number" class="input-block-level" id="age" placeholder="Enter your age" data-title="Age required - Only numeric values allowed">
+				</div>
+			</div>
+			<div class="control-group required">
+				<label for="income" class="control-label">Income</label>
+				<div class="controls">
+					<input type="text" class="input-block-level float" id="income" placeholder="Enter your income" data-title="Income field required - Only numeric or decimal values allowed">
+				</div>
+			</div>
+			<div class="control-group required">
+				<label for="password" class="control-label">Password</label>
+				<div class="controls">
+					<input type="password" class="input-block-level regex" id="password" placeholder="Enter password" data-title="Password required" data-regex="^[^\s]{6,20}$" data-regex-title="Please a enter a password 6 - 20 characters in length">
+				</div>
+			</div>
+			<div class="control-group required">
+				<label for="passwordConfirm" class="control-label">Confirm</label>
+				<div class="controls">
+					<input type="password" class="input-block-level match" id="passwordConfirm" placeholder="Enter password confirmation" data-title="Confirmation password required" data-match="password" data-match-title="Your password and confirmation password do not match">
+				</div>
+			</div>
+			<div class="control-group">
+				<label for="terms" class="control-label required">Terms</label>
+				<div class="controls">
+					<label class="checkbox">
+						<input type="checkbox" name="checkme" id="terms" class="required" data-title="You must agree to the terms"> Check Me
+					</label>
+				</div>
+			</div>
+			<div class="control-group">
+				<div class="controls">
+					<div class="frmPrc hide">
+						<button type="button" class="btn btn-primary" disabled="disabled"><i class="icon-spinner icon-spin"></i> Processing</button>
+					</div>
+					<div class="frmBtn">
+						<button type="submit" class="btn btn-primary"><i class="icon-save"></i> Save</button>
+						<button type="submit" class="btn btn-danger delete"><i class="icon-trash"></i> Delete</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	</div>
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script src="//maxcdn.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+	<script>
+		var BootstrapVersion = 2.3, FontAwesomeVersion = 3.2;
+	</script>
+	<script src="../src/validation.js"></script>
+	<script src="./script.js"></script>
+</body>
+</html>
