@@ -26,9 +26,11 @@ var Validate = {
     'integer': function (value){
         return (/^\d+$/).test(value);
     },
-    'slug': function(value){
-        // at least 3 alpha numerics no spaces and no periods
-        return (/[\w]{3,}[\-]?$/).test(value) && !(/\s/).test(value) && !(/\./).test(value);
+    'slug': function(value) {
+        return (/^[a-z0-9]{3,}(?:(-|_)[a-z0-9]+)*$/).test(value);
+    },
+    'slugWithPeriod': function(value) {
+        return (/^[a-z0-9]{2,}(?:(-|\.|_)[a-z0-9]+)*$/).test(value);
     }
 };
 
@@ -303,8 +305,12 @@ function activateDialog(o,dl){
     else
         dl.modal({backdrop:true,show:true,keyboard:o.keyboard});
     // change color
-    if (o.background !== '')
-        dl.next().css('background-color',o.background);
+    if (o.background !== ''){
+        if (getBootstrapVersion() >= 3)
+            dl.find(".modal-backdrop").css("background-color", o.background);
+        else
+            dl.next().css('background-color',o.background);
+    }
     // fix for iphone view
     dl.on(getBootstrapEvent('shown'),function(){
         if (window.innerHeight <= 480)

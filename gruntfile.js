@@ -37,7 +37,7 @@ module.exports = function(grunt) {
             jsmin: {
                 options: {
                     mangle: true,
-                    compress: true
+                    compress: {}
                 },
                 src: 'dist/validation.full.js',
                 dest: 'dist/validation.min.js'

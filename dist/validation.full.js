@@ -1,10 +1,10 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.1.0 - released 2015-02-07 23:38
+ // v1.2.0 - released 2016-01-31 01:42
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation
  // ----------------------------------------------------------------------------
- // Copyright (C) 2010-2015 Giancarlo Gomez
+ // Copyright (C) 2010-2016 Giancarlo Gomez
  // http://giancarlogomez.com/
  // ----------------------------------------------------------------------------
 
@@ -25,7 +25,10 @@ var Validate = {
         return /^\d+$/.test(value);
     },
     slug: function(value) {
-        return /[\w]{3,}[\-]?$/.test(value) && !/\s/.test(value) && !/\./.test(value);
+        return /^[a-z0-9]{3,}(?:(-|_)[a-z0-9]+)*$/.test(value);
+    },
+    slugWithPeriod: function(value) {
+        return /^[a-z0-9]{2,}(?:(-|\.|_)[a-z0-9]+)*$/.test(value);
     }
 };
 
@@ -204,7 +207,9 @@ function activateDialog(o, dl) {
         show: true,
         keyboard: o.keyboard
     });
-    if (o.background !== "") dl.next().css("background-color", o.background);
+    if (o.background !== "") {
+        if (getBootstrapVersion() >= 3) dl.find(".modal-backdrop").css("background-color", o.background); else dl.next().css("background-color", o.background);
+    }
     dl.on(getBootstrapEvent("shown"), function() {
         if (window.innerHeight <= 480) window.jQuery(this).css({
             top: window.scrollY + 10
