@@ -1,6 +1,7 @@
 {
   "name"          : "Validation",
   "version"       : "1.2.0",
+  "versionDetails": "Added better regular expressions for slug and slugWithPeriod validation and trimmed value of field before passing thru validation.",
   "description"   : "Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)",
   "homepage"      : "https://github.com/GiancarloGomez/javascript.validation",
   "author"        : "Giancarlo Gomez",

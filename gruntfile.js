@@ -8,6 +8,7 @@ module.exports = function(grunt) {
             ' // ----------------------------------------------------------------------------',
             ' // <%= pkg.description %>',
             ' // v<%= pkg.version %> - released <%= grunt.template.today("yyyy-mm-dd HH:MM") %>',
+            ' // <%= pkg.versionDetails %>',
             ' // Licensed under the MIT license.',
             ' // https://github.com/GiancarloGomez/javascript.validation',
             ' // ----------------------------------------------------------------------------',
