@@ -112,8 +112,12 @@ function validateForm(form){
         if (this.disabled)
             return;
         // handle tinymce
-        if (me.hasClass('mceEditor') && window.tinyMCE !== undefined )
-            window.tinyMCE.get(this.id).save(); // auto save any mceEditor value back to textarea
+        if (me.hasClass('mceEditor') && window.tinyMCE !== undefined ){
+            // auto save mceEditor value back to textarea
+            window.tinyMCE.get(this.id).save();
+            // check value of field again
+            value  = me.val().trim();
+        }
 
         if (
                 ((type === 'checkbox' || type === 'radio') && !window.jQuery('input[name='+name+']').is(':checked') && o.checks.indexOf(name) < 0) ||

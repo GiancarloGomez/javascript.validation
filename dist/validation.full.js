@@ -1,7 +1,7 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.2.0 - released 2016-02-03 00:00
- // Added better regular expressions for slug and slugWithPeriod validation and trimmed value of field before passing thru validation.
+ // v1.2.1 - released 2016-04-26 15:43
+ // Updated value of field for TinyMCE type fields.
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation
  // ----------------------------------------------------------------------------
@@ -80,7 +80,10 @@ function validateForm(form) {
     window.jQuery(form).find(".required input,.required select,.required textarea,input.required, select.required, textarea.required").each(function() {
         var me = window.jQuery(this), type = me.attr("type"), name = me.attr("name"), label = me.parents(".control-group, .form-group").find("label"), value = me.val().trim();
         if (this.disabled) return;
-        if (me.hasClass("mceEditor") && window.tinyMCE !== undefined) window.tinyMCE.get(this.id).save();
+        if (me.hasClass("mceEditor") && window.tinyMCE !== undefined) {
+            window.tinyMCE.get(this.id).save();
+            value = me.val().trim();
+        }
         if ((type === "checkbox" || type === "radio") && !window.jQuery("input[name=" + name + "]").is(":checked") && o.checks.indexOf(name) < 0 || (type === "email" || me.hasClass("email")) && !Validate.email(value) || (type === "number" || me.hasClass("integer")) && !Validate.integer(value) || me.hasClass("float") && !Validate.float(value) || (me.hasClass("timepicker") || me.hasClass("time")) && !Validate.dateTime(value) || (me.hasClass("datepicker") || me.hasClass("date") || me.hasClass("datetime")) && !Validate.date(value) || me.hasClass("slug") && !Validate.slug(value) || value === "" || me.hasClass("match") && me.data("match") && value !== window.jQuery("#" + me.data("match")).val() || me.hasClass("regex") && me.data("regex") && !this.value.match(new RegExp(me.data("regex")))) {
             if (value !== "" && me.data("regex-title") && !this.value.match(new RegExp(me.data("regex")))) {
                 o.message += "<li>" + me.data("regex-title") + "</li>";
