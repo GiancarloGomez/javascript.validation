@@ -31,6 +31,22 @@ var Validate = {
     },
     'slugWithPeriod': function(value) {
         return (/^[a-z0-9]{2,}(?:(-|\.|_)[a-z0-9]+)*$/).test(value);
+    },
+    // links for class or type validation
+    'datepicker': function(value){
+        return Validate.date(value);
+    },
+    'datetime': function(value){
+        return Validate.date(value);
+    },
+    'time': function(value){
+        return Validate.dateTime(value);
+    },
+    'timepicker': function(value){
+        return Validate.dateTime(value);
+    },
+    'username': function(value) {
+        return Validate.slugWithPeriod(value);
     }
 };
 
@@ -103,11 +119,12 @@ function validateForm(form){
 
     window.jQuery(form).find('.required input,.required select,.required textarea,input.required, select.required, textarea.required').each(function () {
         // get the type and name
-        var me     = window.jQuery(this),
-            type   = me.attr('type'),
-            name   = me.attr('name'),
-            label  = me.parents('.control-group, .form-group').find('label'),
-            value  = me.val().trim();
+        var me      = window.jQuery(this),
+            type    = me.attr('type'),
+            name    = me.attr('name'),
+            label   = me.parents('.control-group, .form-group').find('label'),
+            value   = me.val().trim(),
+            isValid   = true;
         // skip me if I am disabled
         if (this.disabled)
             return;
@@ -119,14 +136,18 @@ function validateForm(form){
             value  = me.val().trim();
         }
 
+        // loop thru our Validate keys (removed several lines from below)
+        for (var key in Validate){
+            if (me.hasClass(key) || type === key){
+                isValid = Validate[key](value);
+                break;
+            }
+        }
+
+        // handle validation
         if (
+                !isValid ||
                 ((type === 'checkbox' || type === 'radio') && !window.jQuery('input[name='+name+']').is(':checked') && o.checks.indexOf(name) < 0) ||
-                ((type === 'email' || me.hasClass('email')) && !Validate.email(value)) ||
-                ((type === 'number' || me.hasClass('integer')) && !Validate.integer(value)) ||
-                (me.hasClass('float') && !Validate.float(value)) ||
-                ((me.hasClass('timepicker') || me.hasClass('time')) && !Validate.dateTime(value)) ||
-                ((me.hasClass('datepicker') || me.hasClass('date') || me.hasClass('datetime')) && !Validate.date(value)) ||
-                (me.hasClass('slug') && !Validate.slug(value)) ||
                 value === '' ||
                 (me.hasClass('match') && me.data('match') && value !== window.jQuery('#' + me.data('match')).val()) ||
                 (me.hasClass('regex') && me.data('regex') && !this.value.match(new RegExp(me.data('regex'))))

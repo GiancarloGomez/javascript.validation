@@ -1,7 +1,7 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.2.1 - released 2016-04-26 15:43
- // Updated value of field for TinyMCE type fields.
+ // v1.2.2 - released 2016-05-04 23:05
+ // Added shortcut keys in Validate object and updated validateForm to loop thru the keys and find matches on fields to validate instead of individual lines in conditional statement.
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation
  // ----------------------------------------------------------------------------
@@ -30,6 +30,21 @@ var Validate = {
     },
     slugWithPeriod: function(value) {
         return /^[a-z0-9]{2,}(?:(-|\.|_)[a-z0-9]+)*$/.test(value);
+    },
+    datepicker: function(value) {
+        return Validate.date(value);
+    },
+    datetime: function(value) {
+        return Validate.date(value);
+    },
+    time: function(value) {
+        return Validate.dateTime(value);
+    },
+    timepicker: function(value) {
+        return Validate.dateTime(value);
+    },
+    username: function(value) {
+        return Validate.slugWithPeriod(value);
     }
 };
 
@@ -78,13 +93,19 @@ function validateForm(form) {
         form: form
     };
     window.jQuery(form).find(".required input,.required select,.required textarea,input.required, select.required, textarea.required").each(function() {
-        var me = window.jQuery(this), type = me.attr("type"), name = me.attr("name"), label = me.parents(".control-group, .form-group").find("label"), value = me.val().trim();
+        var me = window.jQuery(this), type = me.attr("type"), name = me.attr("name"), label = me.parents(".control-group, .form-group").find("label"), value = me.val().trim(), isValid = true;
         if (this.disabled) return;
         if (me.hasClass("mceEditor") && window.tinyMCE !== undefined) {
             window.tinyMCE.get(this.id).save();
             value = me.val().trim();
         }
-        if ((type === "checkbox" || type === "radio") && !window.jQuery("input[name=" + name + "]").is(":checked") && o.checks.indexOf(name) < 0 || (type === "email" || me.hasClass("email")) && !Validate.email(value) || (type === "number" || me.hasClass("integer")) && !Validate.integer(value) || me.hasClass("float") && !Validate.float(value) || (me.hasClass("timepicker") || me.hasClass("time")) && !Validate.dateTime(value) || (me.hasClass("datepicker") || me.hasClass("date") || me.hasClass("datetime")) && !Validate.date(value) || me.hasClass("slug") && !Validate.slug(value) || value === "" || me.hasClass("match") && me.data("match") && value !== window.jQuery("#" + me.data("match")).val() || me.hasClass("regex") && me.data("regex") && !this.value.match(new RegExp(me.data("regex")))) {
+        for (var key in Validate) {
+            if (me.hasClass(key) || type === key) {
+                isValid = Validate[key](value);
+                break;
+            }
+        }
+        if (!isValid || (type === "checkbox" || type === "radio") && !window.jQuery("input[name=" + name + "]").is(":checked") && o.checks.indexOf(name) < 0 || value === "" || me.hasClass("match") && me.data("match") && value !== window.jQuery("#" + me.data("match")).val() || me.hasClass("regex") && me.data("regex") && !this.value.match(new RegExp(me.data("regex")))) {
             if (value !== "" && me.data("regex-title") && !this.value.match(new RegExp(me.data("regex")))) {
                 o.message += "<li>" + me.data("regex-title") + "</li>";
             } else if (value !== "" && me.hasClass("match") && me.data("match-title")) {
