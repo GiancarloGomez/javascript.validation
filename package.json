@@ -1,7 +1,7 @@
 {
   "name"          : "Validation",
-  "version"       : "1.2.2",
-  "versionDetails": "Added shortcut keys in Validate object and updated validateForm to loop thru the keys and find matches on fields to validate instead of individual lines in conditional statement.",
+  "version"       : "1.2.3",
+  "versionDetails": "Fix for type validation in quick key loop - now the keys are defined in a separate array.",
   "description"   : "Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)",
   "homepage"      : "https://github.com/GiancarloGomez/javascript.validation",
   "author"        : "Giancarlo Gomez",

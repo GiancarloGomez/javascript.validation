@@ -1,7 +1,7 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.2.2 - released 2016-05-04 23:05
- // Added shortcut keys in Validate object and updated validateForm to loop thru the keys and find matches on fields to validate instead of individual lines in conditional statement.
+ // v1.2.3 - released 2016-05-05 23:06
+ // Fix for type validation in quick key loop - now the keys are defined in a separate array.
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation
  // ----------------------------------------------------------------------------
@@ -36,6 +36,9 @@ var Validate = {
     },
     datetime: function(value) {
         return Validate.date(value);
+    },
+    number: function(value) {
+        return Validate.integer(value);
     },
     time: function(value) {
         return Validate.dateTime(value);
@@ -93,14 +96,14 @@ function validateForm(form) {
         form: form
     };
     window.jQuery(form).find(".required input,.required select,.required textarea,input.required, select.required, textarea.required").each(function() {
-        var me = window.jQuery(this), type = me.attr("type"), name = me.attr("name"), label = me.parents(".control-group, .form-group").find("label"), value = me.val().trim(), isValid = true;
+        var me = window.jQuery(this), type = me.attr("type"), name = me.attr("name"), label = me.parents(".control-group, .form-group").find("label"), value = me.val().trim(), isValid = true, keysAsType = [ "email", "number" ];
         if (this.disabled) return;
         if (me.hasClass("mceEditor") && window.tinyMCE !== undefined) {
             window.tinyMCE.get(this.id).save();
             value = me.val().trim();
         }
         for (var key in Validate) {
-            if (me.hasClass(key) || type === key) {
+            if (me.hasClass(key) || keysAsType.indexOf(key) >= 0 && type === key) {
                 isValid = Validate[key](value);
                 break;
             }

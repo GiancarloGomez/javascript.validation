@@ -39,6 +39,9 @@ var Validate = {
     'datetime': function(value){
         return Validate.date(value);
     },
+    'number': function (value){
+        return Validate.integer(value);
+    },
     'time': function(value){
         return Validate.dateTime(value);
     },
@@ -119,12 +122,13 @@ function validateForm(form){
 
     window.jQuery(form).find('.required input,.required select,.required textarea,input.required, select.required, textarea.required').each(function () {
         // get the type and name
-        var me      = window.jQuery(this),
-            type    = me.attr('type'),
-            name    = me.attr('name'),
-            label   = me.parents('.control-group, .form-group').find('label'),
-            value   = me.val().trim(),
-            isValid   = true;
+        var me          = window.jQuery(this),
+            type        = me.attr('type'),
+            name        = me.attr('name'),
+            label       = me.parents('.control-group, .form-group').find('label'),
+            value       = me.val().trim(),
+            isValid     = true,
+            keysAsType  = ['email','number']; // used in validate key loop
         // skip me if I am disabled
         if (this.disabled)
             return;
@@ -138,7 +142,7 @@ function validateForm(form){
 
         // loop thru our Validate keys (removed several lines from below)
         for (var key in Validate){
-            if (me.hasClass(key) || type === key){
+            if (me.hasClass(key) || ( keysAsType.indexOf(key) >= 0 && type === key )){
                 isValid = Validate[key](value);
                 break;
             }
