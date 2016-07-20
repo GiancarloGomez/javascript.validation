@@ -126,9 +126,16 @@ function validateForm(form){
             type        = me.attr('type'),
             name        = me.attr('name'),
             label       = me.parents('.control-group, .form-group').find('label'),
-            value       = me.val().trim(),
+            value       = '',
             isValid     = true,
             keysAsType  = ['email','number']; // used in validate key loop
+
+        // null value fixed in jQuery 3+
+        // adding an additional fix here for multiple choice selects to set as empty string or join array into string
+        if ( me.prop('multiple') === true )
+            value = me.val() === null ? "" : me.val().join(",");
+        else
+            value = me.val().trim();
         // skip me if I am disabled
         if (this.disabled)
             return;
@@ -179,24 +186,33 @@ function validateForm(form){
 * @hint Checks if a dialog div exists and if not it creates it
 */
 function createDialog(o){
+    var dialog, dl, created = false;
+    // set defaults
+    o = setDialogDefaults(o);
+    // look for dialog
+    dialog = document.getElementById(o.dialogid);
     // create if not exists
-    if(document.getElementById('dialog') === null){
+    if (dialog === null){
+        created = true;
         window.jQuery('body').append('<div id="dialog"></div>');
     }
-    // we might have been called while one is open if so close me
-    else if (document.getElementById('dialog').style.display !== 'none'){
-      window.jQuery('body')
-        .find('#dialog, .modal-backdrop').remove().end()
-        .append('<div id="dialog"></div>');
+    // re-create if already open
+    else if (dialog.style.display === "block") {
+        created = true;
+        window.jQuery("body")
+            .find("#" + o.dialogid + ", .modal-backdrop").remove().end()
+            .append('<div id="' + o.dialogid + '"></div>');
     }
-    // get it so we can add it and remove all classes to make sure we start fresh
-    var dl = window.jQuery('#dialog').removeClass().addClass('modal');
-    // handle if fade on
-    if (o.dofade === true)
-        dl.addClass('fade');
-    // handle if extra class
-    if (o.dialogclass !== '')
-        dl.addClass(o.dialogclass);
+    // if created lets set all required classes
+    if (created === true){
+        dl = window.jQuery("#" + o.dialogid).addClass("modal");
+        // add fade class if set to fade
+        if (o.dofade === true)
+            dl.addClass("fade");
+        // add dialog class here if using bootstrap 2, bootstrap 3 sets this in parseForBootstrap()
+        if (o.dialogclass !== "" && getBootstrapVersion() < 3)
+            dl.addClass(o.dialogclass);
+    }
 }
 
 /**
@@ -294,7 +310,8 @@ function setDialogDefaults(o){
             confirmText             : 'OK',             // Default text for Confirmation Button on Regular Dialog
             customfooter            : '',               // Custom Footer
             destroy                 : true,             // destroys div when closed
-            dialogclass             : '',               // class that gets added to dialog div
+            dialogclass             : '',               // class that gets added to dialog div on BS2 and in modal-dialog on BS3+
+            dialogid                : 'dialog',         // defines the id for the dialog
             dofade                  : true,             // animate when open
             dostatic                : false,            // modal - must close with click to button
             err                     : [],               // holds an array of the fields with errors
@@ -386,7 +403,7 @@ function openActionDialog(o){
     // create dialog text
     d = createDialogHeader(o) + createDialogBody(o) + createDialogFooter(o,true);
     // insert dialog text
-    dl = window.jQuery('#dialog').html(parseForBootstrap(d));
+    dl = window.jQuery("#" + o.dialogid).html(parseForBootstrap(d,o,o));
     // activate the dialog
     activateDialog(o,dl);
 
@@ -444,7 +461,7 @@ function openDialog(o){
     // create dialog text
     d = createDialogHeader(o) + createDialogBody(o) + createDialogFooter(o,false);
     // insert dialog text
-    dl = window.jQuery('#dialog').html(parseForBootstrap(d));
+    dl = window.jQuery("#" + o.dialogid).html(parseForBootstrap(d,o));
     // activate the dialog
     activateDialog(o,dl);
 
@@ -486,10 +503,10 @@ function getBootstrapEvent(event){
 /**
 * @hint Prepares a modal depending on Bootstrap Version
 */
-function parseForBootstrap(d){
+function parseForBootstrap(d,o){
     // check if we define a bootstrap version and it is higher than or equal to 3
     if (getBootstrapVersion() >= 3)
-        d = '<div class="modal-dialog"><div class="modal-content">' + d.replace('text-error','text-danger') + '</div></div>';
+        d = '<div class="modal-dialog ' + o.dialogclass + '"><div class="modal-content">' + d.replace('text-error','text-danger') + '</div></div>';
     return d;
 }
 

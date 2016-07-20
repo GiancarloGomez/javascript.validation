@@ -1,7 +1,7 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.2.3 - released 2016-05-05 23:06
- // Fix for type validation in quick key loop - now the keys are defined in a separate array.
+ // v1.2.4 - released 2016-07-19 21:08
+ // Added Multiple Select fix where value was returned as null when no option selected (fixed in jQuery 3+). Added ability to define a custom dialogid and assigned dialog class properly based on Bootstrap version.
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation
  // ----------------------------------------------------------------------------
@@ -96,7 +96,8 @@ function validateForm(form) {
         form: form
     };
     window.jQuery(form).find(".required input,.required select,.required textarea,input.required, select.required, textarea.required").each(function() {
-        var me = window.jQuery(this), type = me.attr("type"), name = me.attr("name"), label = me.parents(".control-group, .form-group").find("label"), value = me.val().trim(), isValid = true, keysAsType = [ "email", "number" ];
+        var me = window.jQuery(this), type = me.attr("type"), name = me.attr("name"), label = me.parents(".control-group, .form-group").find("label"), value = "", isValid = true, keysAsType = [ "email", "number" ];
+        if (me.prop("multiple") === true) value = me.val() === null ? "" : me.val().join(","); else value = me.val().trim();
         if (this.disabled) return;
         if (me.hasClass("mceEditor") && window.tinyMCE !== undefined) {
             window.tinyMCE.get(this.id).save();
@@ -128,14 +129,21 @@ function validateForm(form) {
 }
 
 function createDialog(o) {
-    if (document.getElementById("dialog") === null) {
+    var dialog, dl, created = false;
+    o = setDialogDefaults(o);
+    dialog = document.getElementById(o.dialogid);
+    if (dialog === null) {
+        created = true;
         window.jQuery("body").append('<div id="dialog"></div>');
-    } else if (document.getElementById("dialog").style.display !== "none") {
-        window.jQuery("body").find("#dialog, .modal-backdrop").remove().end().append('<div id="dialog"></div>');
+    } else if (dialog.style.display === "block") {
+        created = true;
+        window.jQuery("body").find("#" + o.dialogid + ", .modal-backdrop").remove().end().append('<div id="' + o.dialogid + '"></div>');
     }
-    var dl = window.jQuery("#dialog").removeClass().addClass("modal");
-    if (o.dofade === true) dl.addClass("fade");
-    if (o.dialogclass !== "") dl.addClass(o.dialogclass);
+    if (created === true) {
+        dl = window.jQuery("#" + o.dialogid).addClass("modal");
+        if (o.dofade === true) dl.addClass("fade");
+        if (o.dialogclass !== "" && getBootstrapVersion() < 3) dl.addClass(o.dialogclass);
+    }
 }
 
 function createDialogHeader(o) {
@@ -190,6 +198,7 @@ function setDialogDefaults(o) {
         customfooter: "",
         destroy: true,
         dialogclass: "",
+        dialogid: "dialog",
         dofade: true,
         dostatic: false,
         err: [],
@@ -263,7 +272,7 @@ function openActionDialog(o) {
     o = setDialogDefaults(o);
     createDialog(o);
     d = createDialogHeader(o) + createDialogBody(o) + createDialogFooter(o, true);
-    dl = window.jQuery("#dialog").html(parseForBootstrap(d));
+    dl = window.jQuery("#" + o.dialogid).html(parseForBootstrap(d, o, o));
     activateDialog(o, dl);
     if (o.destroy === true) dl.on(getBootstrapEvent("hidden"), function() {
         window.jQuery(this).remove();
@@ -301,7 +310,7 @@ function openDialog(o) {
     o = setDialogDefaults(o);
     createDialog(o);
     d = createDialogHeader(o) + createDialogBody(o) + createDialogFooter(o, false);
-    dl = window.jQuery("#dialog").html(parseForBootstrap(d));
+    dl = window.jQuery("#" + o.dialogid).html(parseForBootstrap(d, o));
     activateDialog(o, dl);
     if (o.err.length > 0 && o.form !== null) {
         dl.on(getBootstrapEvent("hidden"), function() {
@@ -333,8 +342,8 @@ function getBootstrapEvent(event) {
     return event;
 }
 
-function parseForBootstrap(d) {
-    if (getBootstrapVersion() >= 3) d = '<div class="modal-dialog"><div class="modal-content">' + d.replace("text-error", "text-danger") + "</div></div>";
+function parseForBootstrap(d, o) {
+    if (getBootstrapVersion() >= 3) d = '<div class="modal-dialog ' + o.dialogclass + '"><div class="modal-content">' + d.replace("text-error", "text-danger") + "</div></div>";
     return d;
 }
 

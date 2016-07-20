@@ -1,7 +1,7 @@
 {
   "name"          : "Validation",
-  "version"       : "1.2.3",
-  "versionDetails": "Fix for type validation in quick key loop - now the keys are defined in a separate array.",
+  "version"       : "1.2.4",
+  "versionDetails": "Added Multiple Select fix where value was returned as null when no option selected (fixed in jQuery 3+). Added ability to define a custom dialogid and assigned dialog class properly based on Bootstrap version.",
   "description"   : "Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)",
   "homepage"      : "https://github.com/GiancarloGomez/javascript.validation",
   "author"        : "Giancarlo Gomez",
