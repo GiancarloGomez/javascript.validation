@@ -1,12 +1,12 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.2.4 - released 2016-07-19 21:08
+ // v1.2.5 - released 2016-07-19 22:44
  // Added Multiple Select fix where value was returned as null when no option selected (fixed in jQuery 3+). Added ability to define a custom dialogid and assigned dialog class properly based on Bootstrap version.
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation
  // ----------------------------------------------------------------------------
- // Copyright (C) 2010-2016 Giancarlo Gomez
- // http://giancarlogomez.com/
+ // Copyright (C) 2013-2016 Giancarlo Gomez
+ // http://giancarlogomez.com
  // ----------------------------------------------------------------------------
 
 var Validate = {
@@ -134,7 +134,7 @@ function createDialog(o) {
     dialog = document.getElementById(o.dialogid);
     if (dialog === null) {
         created = true;
-        window.jQuery("body").append('<div id="dialog"></div>');
+        window.jQuery("body").append('<div id="' + o.dialogid + '"></div>');
     } else if (dialog.style.display === "block") {
         created = true;
         window.jQuery("body").find("#" + o.dialogid + ", .modal-backdrop").remove().end().append('<div id="' + o.dialogid + '"></div>');

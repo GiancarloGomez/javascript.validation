@@ -10,10 +10,10 @@ module.exports = function(grunt) {
             ' // v<%= pkg.version %> - released <%= grunt.template.today("yyyy-mm-dd HH:MM") %>',
             ' // <%= pkg.versionDetails %>',
             ' // Licensed under the MIT license.',
-            ' // https://github.com/GiancarloGomez/javascript.validation',
+            ' // <%= pkg.homepage %>',
             ' // ----------------------------------------------------------------------------',
-            ' // Copyright (C) 2010-<%= grunt.template.today("yyyy") %> Giancarlo Gomez',
-            ' // http://giancarlogomez.com/',
+            ' // Copyright (C) 2013-<%= grunt.template.today("yyyy") %> <%= pkg.author %>',
+            ' // <%= pkg.authorsite %>',
             ' // ----------------------------------------------------------------------------',
             '\n'
         ].join('\n'),

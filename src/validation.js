@@ -194,7 +194,7 @@ function createDialog(o){
     // create if not exists
     if (dialog === null){
         created = true;
-        window.jQuery('body').append('<div id="dialog"></div>');
+        window.jQuery('body').append('<div id="' + o.dialogid + '"></div>');
     }
     // re-create if already open
     else if (dialog.style.display === "block") {
