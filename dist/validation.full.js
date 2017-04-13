@@ -1,11 +1,11 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.2.5 - released 2016-07-19 22:44
- // Added Multiple Select fix where value was returned as null when no option selected (fixed in jQuery 3+). Added ability to define a custom dialogid and assigned dialog class properly based on Bootstrap version.
+ // v1.2.6 - released 2017-04-12 20:11
+ // Fixed issue where a select element would return a null value and trim would fail
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation
  // ----------------------------------------------------------------------------
- // Copyright (C) 2013-2016 Giancarlo Gomez
+ // Copyright (C) 2013-2017 Giancarlo Gomez
  // http://giancarlogomez.com
  // ----------------------------------------------------------------------------
 
@@ -97,7 +97,7 @@ function validateForm(form) {
     };
     window.jQuery(form).find(".required input,.required select,.required textarea,input.required, select.required, textarea.required").each(function() {
         var me = window.jQuery(this), type = me.attr("type"), name = me.attr("name"), label = me.parents(".control-group, .form-group").find("label"), value = "", isValid = true, keysAsType = [ "email", "number" ];
-        if (me.prop("multiple") === true) value = me.val() === null ? "" : me.val().join(","); else value = me.val().trim();
+        if (me.prop("multiple") === true) value = me.val() === null ? "" : me.val().join(","); else value = me.val() ? me.val().trim() : "";
         if (this.disabled) return;
         if (me.hasClass("mceEditor") && window.tinyMCE !== undefined) {
             window.tinyMCE.get(this.id).save();

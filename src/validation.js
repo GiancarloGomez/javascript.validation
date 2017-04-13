@@ -135,7 +135,7 @@ function validateForm(form){
         if ( me.prop('multiple') === true )
             value = me.val() === null ? "" : me.val().join(",");
         else
-            value = me.val().trim();
+            value = me.val() ? me.val().trim() : '';
         // skip me if I am disabled
         if (this.disabled)
             return;

@@ -1,7 +1,7 @@
 {
   "name"          : "Validation",
-  "version"       : "1.2.5",
-  "versionDetails": "Added Multiple Select fix where value was returned as null when no option selected (fixed in jQuery 3+). Added ability to define a custom dialogid and assigned dialog class properly based on Bootstrap version.",
+  "version"       : "1.2.6",
+  "versionDetails": "Fixed issue where a select element would return a null value and trim would fail",
   "description"   : "Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)",
   "homepage"      : "https://github.com/GiancarloGomez/javascript.validation",
   "author"        : "Giancarlo Gomez",
