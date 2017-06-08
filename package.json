@@ -1,7 +1,7 @@
 {
   "name"          : "Validation",
-  "version"       : "1.2.6",
-  "versionDetails": "Fixed issue where a select element would return a null value and trim would fail",
+  "version"       : "1.2.7",
+  "versionDetails": "Fixed issue where a multi select item was using the chosen js library and the input field always fired the required message",
   "description"   : "Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)",
   "homepage"      : "https://github.com/GiancarloGomez/javascript.validation",
   "author"        : "Giancarlo Gomez",

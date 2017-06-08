@@ -129,16 +129,15 @@ function validateForm(form){
             value       = '',
             isValid     = true,
             keysAsType  = ['email','number']; // used in validate key loop
-
+        // skip me if I am disabled or I have a parent chosen container (chosen js)
+        if (this.disabled || me.parents('.chosen-container').length)
+            return;
         // null value fixed in jQuery 3+
         // adding an additional fix here for multiple choice selects to set as empty string or join array into string
         if ( me.prop('multiple') === true )
             value = me.val() === null ? "" : me.val().join(",");
         else
             value = me.val() ? me.val().trim() : '';
-        // skip me if I am disabled
-        if (this.disabled)
-            return;
         // handle tinymce
         if (me.hasClass('mceEditor') && window.tinyMCE !== undefined ){
             // auto save mceEditor value back to textarea
