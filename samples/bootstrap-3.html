@@ -3,8 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Validation BootStrap 3 Example</title>
-	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" href="./forms.css">
 </head>
 <body>
@@ -77,20 +76,22 @@
 			<div class="form-group">
     			<div class="col-sm-offset-2 col-sm-10">
     				<div class="frmPrc hide">
-						<button type="button" class="btn btn-primary" disabled="disabled"><i class="fa fa-spinner fa-spin"></i> Processing</button>
+						<button type="button" class="btn btn-block btn-primary" disabled="disabled">PROCESSING</button>
     				</div>
     				<div class="frmBtn">
-						<button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Submit</button>
-						<button type="submit" class="btn btn-danger delete"><i class="fa fa-trash"></i> Delete</button>
+						<div class="row">
+							<div class="col-xs-6"><button type="submit" class="btn btn-block btn-primary">SUBMIT</button></div>
+							<div class="col-xs-6"><button type="submit" class="btn btn-block btn-danger delete">DELETE</button></div>
+						</div>
 					</div>
 				</div>
 			</div>
 		</form>
 	</div>
 
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-	<script src="../src/validation.js"></script>
+	<script src="../node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="../dist/validation.min.js"></script>
 	<script src="./script.js"></script>
 </body>
 </html>

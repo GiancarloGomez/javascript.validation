@@ -1,25 +1,39 @@
 {
-  "name"          : "Validation",
-  "version"       : "1.2.7",
+  "name": "javascript.validation",
+  "version": "1.2.7",
   "versionDetails": "Fixed issue where a multi select item was using the chosen js library and the input field always fired the required message",
-  "description"   : "Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)",
-  "homepage"      : "https://github.com/GiancarloGomez/javascript.validation",
-  "author"        : "Giancarlo Gomez",
-  "authorsite" 	  : "http://giancarlogomez.com",
-  "license"       : "MIT",
-  "main"          : "dist/validation.js",
-  "repository"    : {
-    "type"  : "git",
-    "url"   : "git@github.com/GiancarloGomez/javascript.validation.git"
-  },
+  "description": "Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)",
+  "homepage": "https://github.com/GiancarloGomez/javascript.validation#readme",
+  "author": "Giancarlo Gomez <giancarlo.gomez@gmail.com> (https://giancarlogomez.com/)",
+  "license": "MIT",
+  "files": [
+    "/dist"
+  ],
+  "browser": "dist/validation.min.js",
+  "repository": "github:GiancarloGomez/javascript.validation",
   "keywords": [
     "jquery",
     "bootstrap",
+    "javascript",
     "validation"
   ],
+  "funding": {
+    "type": "patreon",
+    "url": "https://www.patreon.com/giancarlogomez"
+  },
+  "bugs": {
+    "url": "https://github.com/GiancarloGomez/javascript.validation/issues"
+  },
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-contrib-jshint": "~0.11.0",
     "grunt-contrib-uglify": "~0.7.0"
+  },
+  "dependencies": {
+    "bootstrap": "^3.4.1",
+    "jquery": "^3.4.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
