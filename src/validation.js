@@ -58,9 +58,9 @@ var Validate = {
 * @hint Global FormButtons object which defines the class or id used by the submit and processing button holders
 */
 var FormButtons = {
-    "process"   : "frmPrc",
-    "submit"    : "frmBtn"
-};
+        "process"   : "frmPrc",
+        "submit"    : "frmBtn"
+    };
 
 /**
 * @hint Pass in a form and bind the submit event to the validation process (validateForm)
@@ -79,10 +79,10 @@ function simpleValidation(form,doAlert){
             err     : [],
             checks  : []
         };
-        // handle the form buttons show and hide functionality
-        formButtons(true,this);
         // loop thru each input
         o = validateForm(this);
+        // add any settings that might exists in the forms data attributes
+        o = window.jQuery.extend( o, $(this).data() );
         // run extra validation if exists
         try{
             var e = window[window.jQuery(this).data('extend-validation')];
@@ -97,12 +97,13 @@ function simpleValidation(form,doAlert){
             // focus and select on required field
             if (doAlert){
                 window.alert('Attention:' + o.message.replace(/<li>/gm,'\n').replace(/<\/li>/gm,''));
-                formButtons(false,this);
             } else {
                 openDialog(o);
             }
             return false;
         } else {
+            // handle the form buttons show and hide functionality
+            formButtons(true,this);
             // submit form
             return true;
         }

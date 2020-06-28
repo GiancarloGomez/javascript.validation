@@ -1,12 +1,12 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.2.7 - released 2017-06-07 22:56
- // Fixed issue where a multi select item was using the chosen js library and the input field always fired the required message
+ // v1.3.0 - released 2020-06-28 17:04
+ // Added ability to dialog defaults from data attributes from a form using simple validation
  // Licensed under the MIT license.
- // https://github.com/GiancarloGomez/javascript.validation
+ // https://github.com/GiancarloGomez/javascript.validation#readme
  // ----------------------------------------------------------------------------
- // Copyright (C) 2013-2017 Giancarlo Gomez
- // http://giancarlogomez.com
+ // Copyright (C) 2013-2020 Giancarlo Gomez <giancarlo.gomez@gmail.com> (https://giancarlogomez.com/)
+ // 
  // ----------------------------------------------------------------------------
 
 var Validate = {
@@ -65,8 +65,8 @@ function simpleValidation(form, doAlert) {
             err: [],
             checks: []
         };
-        formButtons(true, this);
         o = validateForm(this);
+        o = window.jQuery.extend(o, $(this).data());
         try {
             var e = window[window.jQuery(this).data("extend-validation")];
             if (typeof e === "function") {
@@ -77,12 +77,12 @@ function simpleValidation(form, doAlert) {
             o.form = this;
             if (doAlert) {
                 window.alert("Attention:" + o.message.replace(/<li>/gm, "\n").replace(/<\/li>/gm, ""));
-                formButtons(false, this);
             } else {
                 openDialog(o);
             }
             return false;
         } else {
+            formButtons(true, this);
             return true;
         }
     });
