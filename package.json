@@ -1,7 +1,7 @@
 {
   "name": "javascript.validation",
-  "version": "1.2.7",
-  "versionDetails": "Fixed issue where a multi select item was using the chosen js library and the input field always fired the required message",
+  "version": "1.3.0",
+  "versionDetails": "Added ability to dialog defaults from data attributes from a form using simple validation",
   "description": "Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)",
   "homepage": "https://github.com/GiancarloGomez/javascript.validation#readme",
   "author": "Giancarlo Gomez <giancarlo.gomez@gmail.com> (https://giancarlogomez.com/)",
