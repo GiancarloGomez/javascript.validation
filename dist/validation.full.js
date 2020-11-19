@@ -1,7 +1,7 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.3.0 - released 2020-06-28 17:04
- // Added ability to dialog defaults from data attributes from a form using simple validation
+ // v1.4.0 - released 2020-11-19 15:30
+ // Added Bootstrap 4 and FontAwesome 5 support 
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation#readme
  // ----------------------------------------------------------------------------
@@ -95,7 +95,7 @@ function validateForm(form) {
         checks: [],
         form: form
     };
-    window.jQuery(form).find(".required input,.required select,.required textarea,input.required, select.required, textarea.required").each(function() {
+    window.jQuery(form).find(".required input,.required select,.required textarea,input.required, select.required, textarea.required, [required]").each(function() {
         var me = window.jQuery(this), type = me.attr("type"), name = me.attr("name"), label = me.parents(".control-group, .form-group").find("label"), value = "", isValid = true, keysAsType = [ "email", "number" ];
         if (this.disabled || me.parents(".chosen-container").length) return;
         if (me.prop("multiple") === true) value = me.val() === null ? "" : me.val().join(","); else value = me.val() ? me.val().trim() : "";
@@ -147,8 +147,23 @@ function createDialog(o) {
 }
 
 function createDialogHeader(o) {
-    var headingTag = getBootstrapVersion() >= 3 ? "h4" : "h3";
-    return o.noheader === false ? '<div class="modal-header"><a href="#" class="close" data-dismiss="modal">&times;</a><' + headingTag + ' class="modal-title">' + (o.header || "Attention") + "</" + headingTag + "></div>" : "";
+    var headingTag = "", closerBefore = '<a href="#" class="close" data-dismiss="modal">&times;</a>', closerAfter = "";
+    switch (getBootstrapVersion()) {
+      case 2:
+        headingTag = "h3";
+        break;
+
+      case 4:
+        headingTag = "h5";
+        closerBefore = "";
+        closerAfter = '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+        break;
+
+      default:
+        headingTag = "h4";
+        break;
+    }
+    return o.noheader === false ? '<div class="modal-header">' + closerBefore + "<" + headingTag + ' class="modal-title">' + (o.header || "Attention") + "</" + headingTag + ">" + closerAfter + "</div>" : "";
 }
 
 function createDialogBody(o) {
@@ -167,15 +182,15 @@ function createDialogBody(o) {
 }
 
 function createDialogFooter(o, withActions) {
-    var str = "", fa = getFontAwesomePrefix();
+    var str = "", fa = getFontAwesomePrefix(), hideClass = getBootstrapVersion() >= 4 ? "hide d-none" : "hide";
     if (o.nofooter !== true) {
         str = '<div class="modal-footer">';
         if (o.customfooter !== "") {
             str += o.customfooter;
         } else if (withActions === true) {
-            str += '<div class="hide"><button class="btn btn-info" disabled="disabled"><i class="' + fa.required + fa.prefix + "refresh " + fa.prefix + 'spin"></i> Processing Request</button></div><div class="show">';
+            str += '<div class="' + hideClass + '"><button class="btn btn-info" disabled="disabled"><i class="' + fa.required + fa.prefix + "spinner " + fa.prefix + 'spin"></i> Processing Request</button></div><div class="show">';
             if (o.includeconfirmbtn === true) {
-                str += '<a href="#" class="btn btn-confirm ' + o.confirmButtonColorClass + '">' + o.confirmButtonText + "</a>";
+                str += '<a href="#" class="btn btn-confirm ' + o.confirmButtonColorClass + ' mr-1">' + o.confirmButtonText + "</a>";
             }
             str += '<a href="#" class="btn ' + o.cancelButtonColorClass + '" data-dismiss="modal">' + o.cancelButtonText + "</a></div>";
         } else {
@@ -279,7 +294,10 @@ function openActionDialog(o) {
     });
     dl.find("a.btn-confirm").click(function() {
         var btnProcess = dl.find(".modal-footer div.hide"), btnSubmit = dl.find(".modal-footer div.show");
-        if (getBootstrapVersion() >= 3) {
+        if (getBootstrapVersion() >= 4) {
+            btnProcess.removeClass("d-none");
+            btnSubmit.addClass("d-none");
+        } else if (getBootstrapVersion() === 3) {
             btnProcess.removeClass("hide");
             btnSubmit.removeClass("show").addClass("hide");
         } else {
@@ -348,7 +366,10 @@ function parseForBootstrap(d, o) {
 }
 
 function showHide(a, b) {
-    if (getBootstrapVersion() >= 3) {
+    if (getBootstrapVersion() >= 4) {
+        window.jQuery("#" + b).addClass("d-none");
+        window.jQuery("#" + a).removeClass("d-none");
+    } else if (getBootstrapVersion() === 3) {
         window.jQuery("#" + b).addClass("hide");
         window.jQuery("#" + a).removeClass("hide");
     } else {

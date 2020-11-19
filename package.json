@@ -1,7 +1,7 @@
 {
   "name": "javascript.validation",
-  "version": "1.3.0",
-  "versionDetails": "Added ability to dialog defaults from data attributes from a form using simple validation",
+  "version": "1.4.0",
+  "versionDetails": "Added Bootstrap 4 and FontAwesome 5 support ",
   "description": "Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)",
   "homepage": "https://github.com/GiancarloGomez/javascript.validation#readme",
   "author": "Giancarlo Gomez <giancarlo.gomez@gmail.com> (https://giancarlogomez.com/)",

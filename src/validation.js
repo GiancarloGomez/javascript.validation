@@ -121,7 +121,7 @@ function validateForm(form){
             form    : form
         };
 
-    window.jQuery(form).find('.required input,.required select,.required textarea,input.required, select.required, textarea.required').each(function () {
+    window.jQuery(form).find('.required input,.required select,.required textarea,input.required, select.required, textarea.required, [required]').each(function () {
         // get the type and name
         var me          = window.jQuery(this),
             type        = me.attr('type'),
@@ -219,8 +219,32 @@ function createDialog(o){
 * @hint Create dialog header
 */
 function createDialogHeader(o){
-    var headingTag = (getBootstrapVersion() >= 3 ? "h4" : "h3");
-    return (o.noheader === false ? '<div class="modal-header"><a href="#" class="close" data-dismiss="modal">&times;</a><'+ headingTag + ' class="modal-title">' + (o.header || 'Attention') + '</'+ headingTag + '></div>' : '');
+    var headingTag      = '',
+        closerBefore    = '<a href="#" class="close" data-dismiss="modal">&times;</a>',
+        closerAfter     = '';
+
+    switch (getBootstrapVersion()){
+        case 2:
+            headingTag = 'h3';
+            break;
+        case 4:
+            headingTag   = 'h5';
+            closerBefore = '';
+            closerAfter  = '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+            break;
+        default:
+            headingTag = 'h4';
+            break;
+    }
+    return (o.noheader === false ?
+                '<div class="modal-header">' +
+                    closerBefore +
+                    '<'+ headingTag + ' class="modal-title">' +
+                        (o.header || 'Attention') +
+                    '</'+ headingTag + '>' +
+                    closerAfter +
+                '</div>'
+            :'');
 }
 
 /**
@@ -268,7 +292,8 @@ function createDialogBody(o){
 */
 function createDialogFooter(o,withActions){
     var str = '',
-        fa  = getFontAwesomePrefix();
+        fa  = getFontAwesomePrefix(),
+        hideClass = getBootstrapVersion() >= 4 ? 'hide d-none' : 'hide';
 
     if (o.nofooter !== true){
         str = '<div class="modal-footer">';
@@ -278,10 +303,10 @@ function createDialogFooter(o,withActions){
         }
         else if (withActions === true)
         {
-            str +=  '<div class="hide"><button class="btn btn-info" disabled="disabled"><i class="'+ fa.required + fa.prefix + 'refresh ' + fa.prefix + 'spin"></i> Processing Request</button></div><div class="show">';
+            str +=  '<div class="' + hideClass + '"><button class="btn btn-info" disabled="disabled"><i class="'+ fa.required + fa.prefix + 'spinner ' + fa.prefix + 'spin"></i> Processing Request</button></div><div class="show">';
             // include confirm button
             if (o.includeconfirmbtn === true) {
-                str +='<a href="#" class="btn btn-confirm ' + o.confirmButtonColorClass + '">' + o.confirmButtonText + '</a>';
+                str +='<a href="#" class="btn btn-confirm ' + o.confirmButtonColorClass + ' mr-1">' + o.confirmButtonText + '</a>';
             }
             // cancel button
             str += '<a href="#" class="btn ' + o.cancelButtonColorClass + '" data-dismiss="modal">' + o.cancelButtonText + '</a></div>';
@@ -419,7 +444,11 @@ function openActionDialog(o){
         var btnProcess = dl.find('.modal-footer div.hide'),
             btnSubmit  = dl.find('.modal-footer div.show');
 
-        if (getBootstrapVersion() >= 3){
+        if (getBootstrapVersion() >= 4){
+            btnProcess.removeClass('d-none');
+            btnSubmit.addClass('d-none');
+        }
+        else if (getBootstrapVersion() === 3){
             btnProcess.removeClass('hide');
             btnSubmit.removeClass('show').addClass('hide');
         } else {
@@ -514,9 +543,13 @@ function parseForBootstrap(d,o){
 * @hint Show/Hide elements - pass 2 elements and there view state will be toggled
 */
 function showHide(a, b){
-    if (getBootstrapVersion() >= 3){
+    if (getBootstrapVersion() >= 4){
+        window.jQuery('#' + b).addClass('d-none'); window.jQuery('#' + a).removeClass('d-none');
+    }
+    else if (getBootstrapVersion() === 3){
         window.jQuery('#' + b).addClass('hide'); window.jQuery('#' + a).removeClass('hide');
-    }else{
+    }
+    else{
         window.jQuery('#' + b).hide(); window.jQuery('#' + a).show();
     }
 }
