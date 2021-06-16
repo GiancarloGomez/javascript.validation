@@ -2,21 +2,18 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Validation BootStrap 3 Example</title>
-	<link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+	<title>Validation w/ BS3 + FA4</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
 	<link rel="stylesheet" href="./forms.css">
 </head>
 <body>
-
 	<div class="container">
 		<div class="page-header">
 			<h1>Validation and Dialog Examples</h1>
 		</div>
-
 		<!-- novalidate attribute is only in place to disable HTML5 validation -->
-
 		<form class="form-horizontal simple-validation" id="frmExample" novalidate>
-
 			<div class="form-group required">
 				<label for="name" class="col-sm-2 control-label">Name</label>
 				<div class="col-sm-10">
@@ -74,23 +71,37 @@
 				</div>
 			</div>
 			<div class="form-group">
-    			<div class="col-sm-offset-2 col-sm-10">
-    				<div class="frmPrc hide">
-						<button type="button" class="btn btn-block btn-primary" disabled="disabled">PROCESSING</button>
-    				</div>
-    				<div class="frmBtn">
+				<div class="col-sm-offset-2 col-sm-10">
+					<div class="frmPrc hide">
+						<button type="button" class="btn btn-block btn-primary" disabled="disabled">
+							<i class="fa fa-spin fa-spinner"></i> PROCESSING
+						</button>
+					</div>
+					<div class="frmBtn">
 						<div class="row">
-							<div class="col-xs-6"><button type="submit" class="btn btn-block btn-primary">SUBMIT</button></div>
-							<div class="col-xs-6"><button type="submit" class="btn btn-block btn-danger delete">DELETE</button></div>
+							<div class="col-xs-6">
+								<button type="submit" class="btn btn-block btn-primary">
+									<i class="fa fa-save"></i> SUBMIT
+								</button>
+							</div>
+							<div class="col-xs-6">
+								<button type="submit" class="btn btn-block btn-danger delete">
+									<i class="fa fa-save"></i> DELETE
+								</button>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</form>
 	</div>
+	<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
-	<script src="../node_modules/jquery/dist/jquery.min.js"></script>
-	<script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script>
+		var BootstrapVersion = 3,
+			FontAwesomeVersion = 4;
+	</script>
 	<script src="../src/validation.js"></script>
 	<script src="./script.js"></script>
 </body>

@@ -1,11 +1,11 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.4.0 - released 2020-11-19 15:30
- // Added Bootstrap 4 and FontAwesome 5 support 
+ // v1.5.0 - released 2021-06-15 21:19
+ // Added Bootstrap 5 and FontAwesome 5 support 
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation#readme
  // ----------------------------------------------------------------------------
- // Copyright (C) 2013-2020 Giancarlo Gomez <giancarlo.gomez@gmail.com> (https://giancarlogomez.com/)
+ // Copyright (C) 2013-2021 Giancarlo Gomez <giancarlo.gomez@gmail.com> (https://giancarlogomez.com/)
  // 
  // ----------------------------------------------------------------------------
 
@@ -146,28 +146,32 @@ function createDialog(o) {
     }
 }
 
+function getDismissModalAttribute() {
+    return getBootstrapVersion() >= 5 ? 'data-bs-dismiss="modal"' : 'data-dismiss="modal"';
+}
+
 function createDialogHeader(o) {
-    var headingTag = "", closerBefore = '<a href="#" class="close" data-dismiss="modal">&times;</a>', closerAfter = "";
-    switch (getBootstrapVersion()) {
+    var headingTag = "", closerBefore = '<a href="#" class="close" ' + getDismissModalAttribute() + ">&times;</a>", closerAfter = "", bsVersion = getBootstrapVersion();
+    switch (bsVersion) {
       case 2:
         headingTag = "h3";
         break;
 
-      case 4:
-        headingTag = "h5";
-        closerBefore = "";
-        closerAfter = '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+      case 3:
+        headingTag = "h4";
         break;
 
       default:
-        headingTag = "h4";
+        headingTag = "h5";
+        closerBefore = "";
+        closerAfter = '<button type="button" class="' + (bsVersion >= 5 ? "btn-" : "") + 'close" ' + getDismissModalAttribute() + ' aria-label="Close">' + (bsVersion < 5 ? '<span aria-hidden="true">&times;</span>' : "") + "</button>";
         break;
     }
     return o.noheader === false ? '<div class="modal-header">' + closerBefore + "<" + headingTag + ' class="modal-title">' + (o.header || "Attention") + "</" + headingTag + ">" + closerAfter + "</div>" : "";
 }
 
 function createDialogBody(o) {
-    var bodyClass = o.noerror === false ? "text-error" : "", bodyStyle = "", asList = o.message.indexOf("<li>") !== -1 && o.message.indexOf("<ul>") === -1, tag = asList === true ? "ul" : "div", height = 0;
+    var bodyClass = o.noerror === false ? "text-error mb-0" : "", bodyStyle = "", asList = o.message.indexOf("<li>") !== -1 && o.message.indexOf("<ul>") === -1, tag = asList === true ? "ul" : "div", height = 0;
     if (o.noheader === false) height += 70;
     if (o.nofooter === false) height += 70;
     if (getBootstrapVersion() >= 3) {
@@ -182,7 +186,7 @@ function createDialogBody(o) {
 }
 
 function createDialogFooter(o, withActions) {
-    var str = "", fa = getFontAwesomePrefix(), hideClass = getBootstrapVersion() >= 4 ? "hide d-none" : "hide";
+    var str = "", fa = getFontAwesomePrefix(), bsVersion = getBootstrapVersion(), hideClass = bsVersion >= 4 ? "d-none" : "hide", buttonMargin = bsVersion >= 5 ? "me-1" : bsVersion === 4 ? "mr-1" : "";
     if (o.nofooter !== true) {
         str = '<div class="modal-footer">';
         if (o.customfooter !== "") {
@@ -190,11 +194,11 @@ function createDialogFooter(o, withActions) {
         } else if (withActions === true) {
             str += '<div class="' + hideClass + '"><button class="btn btn-info" disabled="disabled"><i class="' + fa.required + fa.prefix + "spinner " + fa.prefix + 'spin"></i> Processing Request</button></div><div class="show">';
             if (o.includeconfirmbtn === true) {
-                str += '<a href="#" class="btn btn-confirm ' + o.confirmButtonColorClass + ' mr-1">' + o.confirmButtonText + "</a>";
+                str += '<a href="#" class="btn btn-confirm ' + o.confirmButtonColorClass + " " + buttonMargin + '">' + o.confirmButtonText + "</a>";
             }
-            str += '<a href="#" class="btn ' + o.cancelButtonColorClass + '" data-dismiss="modal">' + o.cancelButtonText + "</a></div>";
+            str += '<a href="#" class="btn ' + o.cancelButtonColorClass + '" ' + getDismissModalAttribute() + ">" + o.cancelButtonText + "</a></div>";
         } else {
-            str += '<a href="#" class="btn ' + o.confirmButtonColorClass + '" data-dismiss="modal">' + o.confirmText + "</a>";
+            str += '<a href="#" class="btn ' + o.confirmButtonColorClass + '" ' + getDismissModalAttribute() + ">" + o.confirmText + "</a>";
         }
         str += "</div>";
     }
@@ -250,15 +254,20 @@ function activateDialog(o, dl) {
             width: o.width
         });
     }
-    if (o.dostatic === true) dl.modal({
-        backdrop: "static",
-        show: true,
-        keyboard: o.keyboard
-    }); else dl.modal({
-        backdrop: true,
-        show: true,
-        keyboard: o.keyboard
-    });
+    if (getBootstrapVersion() >= 5) {
+        new bootstrap.Modal(dl[0], {
+            backdrop: o.dostatic === true ? "static" : true,
+            focus: true,
+            keyboard: o.keyboard
+        });
+        bootstrap.Modal.getInstance(dl[0]).show();
+    } else {
+        dl.modal({
+            backdrop: o.dostatic === true ? "static" : true,
+            show: true,
+            keyboard: o.keyboard
+        });
+    }
     if (o.background !== "") {
         if (getBootstrapVersion() >= 3) dl.find(".modal-backdrop").css("background-color", o.background); else dl.next().css("background-color", o.background);
     }
@@ -310,7 +319,7 @@ function openActionDialog(o) {
             if (o.parent.target.indexOf("blank") >= 0 || o.parent.target.indexOf("new") >= 0) {
                 var newWindow = window.open(o.parent.href, "_blank");
                 newWindow.focus();
-                dl.modal("hide");
+                if (getBootstrapVersion() >= 5) bootstrap.Modal.getInstance(dl[0]).hide(); else dl.modal("hide");
             } else {
                 window.location = o.parent.href;
             }

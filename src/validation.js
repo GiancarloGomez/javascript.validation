@@ -1,14 +1,15 @@
 /**
  * Simple JavaScript Validation
+ * Supporting Bootstrap 2-5 and FontAwesome 3-5
+ * If using Bootstrap 5, jQuery is still required for other functions in library
  * https://github.com/GiancarloGomez/javascript.validation
  *
  * @requires    jQuery, Bootstrap 2+ and FontAwesome 3+
  * @author      Giancarlo Gomez
  */
 
-// !Validate
 /**
-* @hint Global Validate object which can be used to validate a string to a specified format
+* Global Validate object which can be used to validate a string to a specified format
 */
 var Validate = {
     'date': function(value){
@@ -53,9 +54,8 @@ var Validate = {
     }
 };
 
-// !FormButtons
 /**
-* @hint Global FormButtons object which defines the class or id used by the submit and processing button holders
+* Global FormButtons object which defines the class or id used by the submit and processing button holders
 */
 var FormButtons = {
         "process"   : "frmPrc",
@@ -63,7 +63,7 @@ var FormButtons = {
     };
 
 /**
-* @hint Pass in a form and bind the submit event to the validation process (validateForm)
+* Pass in a form and bind the submit event to the validation process (validateForm)
 */
 function simpleValidation(form,doAlert){
     if (form === undefined)
@@ -111,7 +111,7 @@ function simpleValidation(form,doAlert){
 }
 
 /**
-* @hint The validation process bound by simpleValidation or calling directly, requires passing a form
+* The validation process bound by simpleValidation or calling directly, requires passing a form
 */
 function validateForm(form){
     var o = {
@@ -183,7 +183,7 @@ function validateForm(form){
 }
 
 /**
-* @hint Checks if a dialog div exists and if not it creates it
+* Checks if a dialog div exists and if not it creates it
 */
 function createDialog(o){
     var dialog, dl, created = false;
@@ -215,25 +215,32 @@ function createDialog(o){
     }
 }
 
+function getDismissModalAttribute(){
+    return getBootstrapVersion() >= 5 ? 'data-bs-dismiss="modal"' : 'data-dismiss="modal"';
+}
+
 /**
-* @hint Create dialog header
+* Create dialog header
 */
 function createDialogHeader(o){
     var headingTag      = '',
-        closerBefore    = '<a href="#" class="close" data-dismiss="modal">&times;</a>',
-        closerAfter     = '';
+        closerBefore    = '<a href="#" class="close" ' + getDismissModalAttribute() + '>&times;</a>',
+        closerAfter     = '',
+        bsVersion       = getBootstrapVersion();
 
-    switch (getBootstrapVersion()){
+    switch ( bsVersion ){
         case 2:
             headingTag = 'h3';
             break;
-        case 4:
-            headingTag   = 'h5';
-            closerBefore = '';
-            closerAfter  = '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+        case 3:
+            headingTag = 'h4';
             break;
         default:
-            headingTag = 'h4';
+            headingTag   = 'h5';
+            closerBefore = '';
+            closerAfter  = '<button type="button" class="' + ( bsVersion >= 5 ? 'btn-' : '' ) + 'close" ' + getDismissModalAttribute() + ' aria-label="Close">' +
+                            ( bsVersion < 5 ? '<span aria-hidden="true">&times;</span>' : '') +
+                            '</button>';
             break;
     }
     return (o.noheader === false ?
@@ -248,10 +255,10 @@ function createDialogHeader(o){
 }
 
 /**
-* @hint Create dialog body
+* Create dialog body
 */
 function createDialogBody(o){
-    var bodyClass   = (o.noerror === false ? 'text-error' :''),
+    var bodyClass   = (o.noerror === false ? 'text-error mb-0' :''),
         bodyStyle   = "",
         asList      = o.message.indexOf('<li>') !== -1 && o.message.indexOf('<ul>') === -1,
         tag         = asList === true ? 'ul' : 'div',
@@ -288,12 +295,16 @@ function createDialogBody(o){
 }
 
 /**
-* @hint Create dialog footer
+* Create dialog footer
 */
 function createDialogFooter(o,withActions){
     var str = '',
         fa  = getFontAwesomePrefix(),
-        hideClass = getBootstrapVersion() >= 4 ? 'hide d-none' : 'hide';
+        bsVersion = getBootstrapVersion(),
+        hideClass =  bsVersion >= 4 ? 'd-none' : 'hide',
+        buttonMargin =  bsVersion >= 5 ? 'me-1' :
+                        bsVersion === 4 ? 'mr-1' :
+                        '';
 
     if (o.nofooter !== true){
         str = '<div class="modal-footer">';
@@ -306,14 +317,14 @@ function createDialogFooter(o,withActions){
             str +=  '<div class="' + hideClass + '"><button class="btn btn-info" disabled="disabled"><i class="'+ fa.required + fa.prefix + 'spinner ' + fa.prefix + 'spin"></i> Processing Request</button></div><div class="show">';
             // include confirm button
             if (o.includeconfirmbtn === true) {
-                str +='<a href="#" class="btn btn-confirm ' + o.confirmButtonColorClass + ' mr-1">' + o.confirmButtonText + '</a>';
+                str +='<a href="#" class="btn btn-confirm ' + o.confirmButtonColorClass + ' ' + buttonMargin + '">' + o.confirmButtonText + '</a>';
             }
             // cancel button
-            str += '<a href="#" class="btn ' + o.cancelButtonColorClass + '" data-dismiss="modal">' + o.cancelButtonText + '</a></div>';
+            str += '<a href="#" class="btn ' + o.cancelButtonColorClass + '" ' + getDismissModalAttribute() + '>' + o.cancelButtonText + '</a></div>';
         }
         else
         {
-            str += '<a href="#" class="btn ' + o.confirmButtonColorClass + '" data-dismiss="modal">' + o.confirmText + '</a>';
+            str += '<a href="#" class="btn ' + o.confirmButtonColorClass + '" ' + getDismissModalAttribute() + '>' + o.confirmText + '</a>';
         }
         str += '</div>';
     }
@@ -321,7 +332,7 @@ function createDialogFooter(o,withActions){
 }
 
 /**
-* @hint Set dialog defaults required
+* Set dialog defaults required
 */
 function setDialogDefaults(o){
 
@@ -358,24 +369,36 @@ function setDialogDefaults(o){
 }
 
 /**
-* @hint Activates the dialog - all requirements and then opens
+* Activates the dialog - all requirements and then opens
 */
 function activateDialog(o,dl){
     // overwrite dimensions if passed (only bs2)
-    if (getBootstrapVersion() < 3){
+    if ( getBootstrapVersion() < 3 ){
         if (o.width !== 0)
             dl.css({'max-width': o.width,'width': o.width,'margin-left':-(o.width/2)});
         if (o.height !== 0)
             dl.css({'max-height':o.height,'height':o.height});
-    } else if (o.width !== 0){
+    }
+    else if (o.width !== 0){
         if (o.width !== 0)
             dl.find('.modal-dialog').css({'max-width': o.width,'width': o.width});
     }
     // open modal
-    if (o.dostatic === true)
-        dl.modal({backdrop:'static',show:true,keyboard:o.keyboard});
-    else
-        dl.modal({backdrop:true,show:true,keyboard:o.keyboard});
+    if ( getBootstrapVersion() >= 5 ){
+        new bootstrap.Modal( dl[0], {
+            backdrop    : o.dostatic === true ? 'static' : true,
+            focus       : true,
+            keyboard    : o.keyboard
+        });
+        bootstrap.Modal.getInstance(dl[0]).show();
+    }
+    else {
+        dl.modal({
+            backdrop    : o.dostatic === true ? 'static' : true,
+            show        : true,
+            keyboard    : o.keyboard
+        });
+    }
     // change color
     if (o.background !== ''){
         if (getBootstrapVersion() >= 3)
@@ -391,7 +414,7 @@ function activateDialog(o,dl){
 }
 
 /**
-* @hint Show/Hide form process
+* Show/Hide form process
 */
 function formButtons(theState,theForm){
     var runGlobal = false;
@@ -417,7 +440,7 @@ function formButtons(theState,theForm){
 }
 
 /**
-* @hint Open a dialog with actions
+* Open a dialog with actions
 */
 function openActionDialog(o){
     var d,dl;
@@ -463,7 +486,10 @@ function openActionDialog(o){
             if(o.parent.target.indexOf('blank') >= 0 || o.parent.target.indexOf('new') >= 0){
                 var newWindow = window.open(o.parent.href, '_blank');
                 newWindow.focus();
-                dl.modal('hide');
+                if ( getBootstrapVersion() >= 5 )
+                    bootstrap.Modal.getInstance(dl[0]).hide();
+                else
+                    dl.modal('hide');
             }else{
                 window.location=o.parent.href;
             }
@@ -479,7 +505,7 @@ function openActionDialog(o){
 }
 
 /**
-* @hint Open a dialog
+* Open a dialog
 */
 function openDialog(o){
     var d,dl;
@@ -495,7 +521,6 @@ function openDialog(o){
     activateDialog(o,dl);
 
     // CUSTOM PROPERTIES FOR THIS TYPE
-
     if (o.err.length > 0 && o.form !== null){
         dl.on(getBootstrapEvent('hidden'),function(){
             formButtons(false,o.form);
@@ -511,7 +536,7 @@ function openDialog(o){
 }
 
 /**
-* @hint Gets the Font Awesome icon prefix to use
+* Gets the Font Awesome icon prefix to use
 */
 function getFontAwesomePrefix(){
     var fa = {required:'',prefix:'icon-'};
@@ -521,7 +546,7 @@ function getFontAwesomePrefix(){
 }
 
 /**
-* @hint Gets the event to listen for depending on Bootstrap Version
+* Gets the event to listen for depending on Bootstrap Version
 */
 function getBootstrapEvent(event){
     if (getBootstrapVersion() >= 3)
@@ -530,7 +555,7 @@ function getBootstrapEvent(event){
 }
 
 /**
-* @hint Prepares a modal depending on Bootstrap Version
+* Prepares a modal depending on Bootstrap Version
 */
 function parseForBootstrap(d,o){
     // check if we define a bootstrap version and it is higher than or equal to 3
@@ -540,7 +565,7 @@ function parseForBootstrap(d,o){
 }
 
 /**
-* @hint Show/Hide elements - pass 2 elements and there view state will be toggled
+* Show/Hide elements - pass 2 elements and there view state will be toggled
 */
 function showHide(a, b){
     if (getBootstrapVersion() >= 4){
@@ -555,26 +580,27 @@ function showHide(a, b){
 }
 
 /**
-* @hint Return Bootstrap Version defined by global variable BootstrapVersion - defaults to 3
+* Return Bootstrap Version defined by global variable BootstrapVersion
+* defaults to 3
 */
 function getBootstrapVersion(){
     return (typeof(BootstrapVersion) === 'number' ? BootstrapVersion : 3);
 }
 
 /**
-* @hint Return FontAwesome Version defined by global variable FontAwesomeVersion - defaults to 4
+* Return FontAwesome Version defined by global variable FontAwesomeVersion
+* defaults to 4
 */
 function getFontAwesomeVersion(){
     return (typeof(FontAwesomeVersion) === 'number' ? FontAwesomeVersion : 4);
 }
 
-// !Initialize
 window.jQuery(function(){
-    // !Simple form validation with modal
+    // Simple form validation with modal
     window.jQuery('form.simple-validation').each(function(){
         simpleValidation(this,false);
     });
-    // !Simple form validation with alert
+    // Simple form validation with alert
     window.jQuery('form.simple-validation-alert').each(function(){
         simpleValidation(this,true);
     });
