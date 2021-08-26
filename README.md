@@ -1,5 +1,7 @@
 # JavaScript Validation
-A simple validation library that requires jQuery, Bootstrap 2+ (w/ Modal JS) and FontAwesome 3+
+A simple validation library that requires jQuery, Bootstrap 2+ (w/ Modal JS) and FontAwesome 3+  
+
+[![](https://data.jsdelivr.com/v1/package/npm/javascript.validation/badge)](https://www.jsdelivr.com/package/npm/javascript.validation)
 
 ## Specifying Bootstrap and FontAwesome Versions
 The library references two global variables which it uses to build the modal and rendering icons. The variables are `BootstrapVersion` which defaults to 3 and `FontAwesomeVersion` which defaults to 4. If using an earlier versions simply create the global variables in your document as follows.
