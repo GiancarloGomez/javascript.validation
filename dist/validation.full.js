@@ -1,6 +1,6 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.5.2 - released 2021-08-26 23:07
+ // v1.5.2 - released 2021-08-26 23:17
  // Added Bootstrap 5 and FontAwesome 5 support 
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation#readme
@@ -192,7 +192,7 @@ function createDialogFooter(o, withActions) {
         if (o.customfooter !== "") {
             str += o.customfooter;
         } else if (withActions === true) {
-            str += '<div class="' + hideClass + '"><button class="btn btn-info" disabled="disabled"><i class="' + fa.required + fa.prefix + "spinner " + fa.prefix + 'spin"></i> Processing Request</button></div><div class="show">';
+            str += '<div class="' + hideClass + '"><button class="btn ' + o.confirmButtonColorClass + '" disabled="disabled"><i class="' + fa.required + fa.prefix + "spinner " + fa.prefix + 'spin"></i> Processing Request</button></div><div class="show">';
             if (o.includeconfirmbtn === true) {
                 str += '<a href="#" class="btn btn-confirm ' + o.confirmButtonColorClass + " " + buttonMargin + '">' + o.confirmButtonText + "</a>";
             }
