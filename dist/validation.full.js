@@ -1,6 +1,6 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.5.0 - released 2021-06-15 21:19
+ // v1.5.2 - released 2021-08-26 23:07
  // Added Bootstrap 5 and FontAwesome 5 support 
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation#readme
@@ -302,7 +302,7 @@ function openActionDialog(o) {
         window.jQuery(this).remove();
     });
     dl.find("a.btn-confirm").click(function() {
-        var btnProcess = dl.find(".modal-footer div.hide"), btnSubmit = dl.find(".modal-footer div.show");
+        var btnProcess = getBootstrapVersion() >= 4 ? dl.find(".modal-footer div.d-none") : dl.find(".modal-footer div.hide"), btnSubmit = dl.find(".modal-footer div.show");
         if (getBootstrapVersion() >= 4) {
             btnProcess.removeClass("d-none");
             btnSubmit.addClass("d-none");

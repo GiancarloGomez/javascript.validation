@@ -464,7 +464,9 @@ function openActionDialog(o){
     // confirm button action
     dl.find('a.btn-confirm').click(function(){
         // hide/show buttons
-        var btnProcess = dl.find('.modal-footer div.hide'),
+        var btnProcess = getBootstrapVersion() >= 4 ?
+                            dl.find('.modal-footer div.d-none') :
+                            dl.find('.modal-footer div.hide'),
             btnSubmit  = dl.find('.modal-footer div.show');
 
         if (getBootstrapVersion() >= 4){
