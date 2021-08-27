@@ -1,6 +1,6 @@
 {
   "name": "javascript.validation",
-  "version": "1.5.2",
+  "version": "1.5.4",
   "versionDetails": "Added Bootstrap 5 and FontAwesome 5 support ",
   "description": "Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)",
   "homepage": "https://github.com/GiancarloGomez/javascript.validation#readme",

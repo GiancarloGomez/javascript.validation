@@ -1,6 +1,6 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.5.2 - released 2021-08-26 23:17
+ // v1.5.4 - released 2021-08-26 23:20
  // Added Bootstrap 5 and FontAwesome 5 support 
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation#readme
