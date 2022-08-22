@@ -7,3 +7,7 @@ label.required:before{
 	color:#c00;
 	content:"* ";
 }
+
+.validated input:invalid{
+	border-color:red;
+}

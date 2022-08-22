@@ -1,11 +1,11 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.5.4 - released 2021-08-26 23:20
- // Added Bootstrap 5 and FontAwesome 5 support 
+ // v1.5.5 - released 2022-08-22 17:54
+ // When form is validated, a validated class is added to it in order to use :invalid and :valid CSS selectors
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation#readme
  // ----------------------------------------------------------------------------
- // Copyright (C) 2013-2021 Giancarlo Gomez <giancarlo.gomez@gmail.com> (https://giancarlogomez.com/)
+ // Copyright (C) 2013-2022 Giancarlo Gomez <giancarlo.gomez@gmail.com> (https://giancarlogomez.com/)
  // 
  // ----------------------------------------------------------------------------
 
@@ -95,7 +95,7 @@ function validateForm(form) {
         checks: [],
         form: form
     };
-    window.jQuery(form).find(".required input,.required select,.required textarea,input.required, select.required, textarea.required, [required]").each(function() {
+    window.jQuery(form).addClass("validated").find(".required input,.required select,.required textarea,input.required, select.required, textarea.required, [required]").each(function() {
         var me = window.jQuery(this), type = me.attr("type"), name = me.attr("name"), label = me.parents(".control-group, .form-group").find("label"), value = "", isValid = true, keysAsType = [ "email", "number" ];
         if (this.disabled || me.parents(".chosen-container").length) return;
         if (me.prop("multiple") === true) value = me.val() === null ? "" : me.val().join(","); else value = me.val() ? me.val().trim() : "";

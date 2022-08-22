@@ -121,7 +121,7 @@ function validateForm(form){
             form    : form
         };
 
-    window.jQuery(form).find('.required input,.required select,.required textarea,input.required, select.required, textarea.required, [required]').each(function () {
+    window.jQuery(form).addClass('validated').find('.required input,.required select,.required textarea,input.required, select.required, textarea.required, [required]').each(function () {
         // get the type and name
         var me          = window.jQuery(this),
             type        = me.attr('type'),
