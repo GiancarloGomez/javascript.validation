@@ -19,7 +19,7 @@ var Validate = {
         return !(/Invalid|NaN/).test(new Date(value));
     },
     'email': function(value){
-        return (/^[_a-zA-Z0-9\-]+((\.[_a-zA-Z0-9\-]+)*|(\+[_a-zA-Z0-9\-]+)*)*@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*(\.[a-zA-Z]{2,4})$/i).test(value);
+        return (/^[_a-zA-Z0-9\-]+((\.[_a-zA-Z0-9\-]+)*|(\+[_a-zA-Z0-9\-]+)*)*@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*(\.[a-zA-Z]{2,})$/i).test(value);
     },
     'float': function(value){
         return (/^[\-+]?[0-9]*\.?[0-9]+$/).test(value);

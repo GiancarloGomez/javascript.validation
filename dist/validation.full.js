@@ -1,7 +1,7 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.5.5 - released 2022-08-22 17:54
- // When form is validated, a validated class is added to it in order to use :invalid and :valid CSS selectors
+ // v1.6.0 - released 2022-09-21 17:45
+ // Removed TLD length restriction on email validation
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation#readme
  // ----------------------------------------------------------------------------
@@ -17,7 +17,7 @@ var Validate = {
         return !/Invalid|NaN/.test(new Date(value));
     },
     email: function(value) {
-        return /^[_a-zA-Z0-9\-]+((\.[_a-zA-Z0-9\-]+)*|(\+[_a-zA-Z0-9\-]+)*)*@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*(\.[a-zA-Z]{2,4})$/i.test(value);
+        return /^[_a-zA-Z0-9\-]+((\.[_a-zA-Z0-9\-]+)*|(\+[_a-zA-Z0-9\-]+)*)*@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*(\.[a-zA-Z]{2,})$/i.test(value);
     },
     "float": function(value) {
         return /^[\-+]?[0-9]*\.?[0-9]+$/.test(value);
