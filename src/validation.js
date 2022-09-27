@@ -338,6 +338,7 @@ function setDialogDefaults(o){
 
     var defaults = {
             background              : '',               // background color applied to modal-backdrop
+            backdrop                : true,             // bs modal backdrop property - dostatic takes priority if sent in as true
             callback                : null,             // function to run on Action Dialog close
             cancelButtonColorClass  : 'btn-danger',     // Default class for Cancel Button
             cancelButtonText        : 'No',             // Default text for Cancel Button
@@ -383,22 +384,32 @@ function activateDialog(o,dl){
         if (o.width !== 0)
             dl.find('.modal-dialog').css({'max-width': o.width,'width': o.width});
     }
+
+    // before opening modal lets check if there is another modal open
+    // and if so overwrite the options to not have a backdrop
+    var classCheck  = getBootstrapVersion() >= 4 ? '.modal.show' : '.modal.in';
+    var activeModal = document.querySelector( classCheck );
+
+    if ( activeModal ){
+        // lets add a border to the dialog content to help show better
+        // if stacked on top
+            dl.find('.modal-content').addClass('shadow-sm border');
+        // remove modal animation if existing one does not have it
+        if ( !activeModal.classList.contains('fade') )
+            dl.removeClass('fade');
+        o.dostatic =
+        o.backdrop = false;
+    }
+
     // open modal
-    if ( getBootstrapVersion() >= 5 ){
-        new bootstrap.Modal( dl[0], {
-            backdrop    : o.dostatic === true ? 'static' : true,
-            focus       : true,
-            keyboard    : o.keyboard
-        });
-        bootstrap.Modal.getInstance(dl[0]).show();
-    }
-    else {
-        dl.modal({
-            backdrop    : o.dostatic === true ? 'static' : true,
-            show        : true,
-            keyboard    : o.keyboard
-        });
-    }
+    dl.modal({
+        backdrop    : o.dostatic === true ? 'static' : o.backdrop,
+        keyboard    : o.keyboard
+    });
+
+    if ( getBootstrapVersion() >= 5 )
+        dl.modal('show');
+
     // change color
     if (o.background !== ''){
         if (getBootstrapVersion() >= 3)
@@ -488,10 +499,7 @@ function openActionDialog(o){
             if(o.parent.target.indexOf('blank') >= 0 || o.parent.target.indexOf('new') >= 0){
                 var newWindow = window.open(o.parent.href, '_blank');
                 newWindow.focus();
-                if ( getBootstrapVersion() >= 5 )
-                    bootstrap.Modal.getInstance(dl[0]).hide();
-                else
-                    dl.modal('hide');
+                dl.modal('hide');
             }else{
                 window.location=o.parent.href;
             }

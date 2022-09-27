@@ -1,7 +1,7 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.6.0 - released 2022-09-21 17:45
- // Removed TLD length restriction on email validation
+ // v1.7.0 - released 2022-09-26 20:08
+ // Updates to options, added backdrop. Added check prior to opening a modal to make sure to not show a backdrop if one is already present.
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation#readme
  // ----------------------------------------------------------------------------
@@ -208,6 +208,7 @@ function createDialogFooter(o, withActions) {
 function setDialogDefaults(o) {
     var defaults = {
         background: "",
+        backdrop: true,
         callback: null,
         cancelButtonColorClass: "btn-danger",
         cancelButtonText: "No",
@@ -254,20 +255,18 @@ function activateDialog(o, dl) {
             width: o.width
         });
     }
-    if (getBootstrapVersion() >= 5) {
-        new bootstrap.Modal(dl[0], {
-            backdrop: o.dostatic === true ? "static" : true,
-            focus: true,
-            keyboard: o.keyboard
-        });
-        bootstrap.Modal.getInstance(dl[0]).show();
-    } else {
-        dl.modal({
-            backdrop: o.dostatic === true ? "static" : true,
-            show: true,
-            keyboard: o.keyboard
-        });
+    var classCheck = getBootstrapVersion() >= 4 ? ".modal.show" : ".modal.in";
+    var activeModal = document.querySelector(classCheck);
+    if (activeModal) {
+        dl.find(".modal-content").addClass("shadow-sm border");
+        if (!activeModal.classList.contains("fade")) dl.removeClass("fade");
+        o.dostatic = o.backdrop = false;
     }
+    dl.modal({
+        backdrop: o.dostatic === true ? "static" : o.backdrop,
+        keyboard: o.keyboard
+    });
+    if (getBootstrapVersion() >= 5) dl.modal("show");
     if (o.background !== "") {
         if (getBootstrapVersion() >= 3) dl.find(".modal-backdrop").css("background-color", o.background); else dl.next().css("background-color", o.background);
     }
@@ -319,7 +318,7 @@ function openActionDialog(o) {
             if (o.parent.target.indexOf("blank") >= 0 || o.parent.target.indexOf("new") >= 0) {
                 var newWindow = window.open(o.parent.href, "_blank");
                 newWindow.focus();
-                if (getBootstrapVersion() >= 5) bootstrap.Modal.getInstance(dl[0]).hide(); else dl.modal("hide");
+                dl.modal("hide");
             } else {
                 window.location = o.parent.href;
             }
