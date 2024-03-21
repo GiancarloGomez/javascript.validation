@@ -1,7 +1,7 @@
 {
   "name": "javascript.validation",
-  "version": "1.7.0",
-  "versionDetails": "Updates to options, added backdrop. Added check prior to opening a modal to make sure to not show a backdrop if one is already present.",
+  "version": "1.8.0",
+  "versionDetails": "Added ability to force a message to not render as a list using asList option and flip cancel button location using cancelButtonLast option.",
   "description": "Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)",
   "homepage": "https://github.com/GiancarloGomez/javascript.validation#readme",
   "author": "Giancarlo Gomez <giancarlo.gomez@gmail.com> (https://giancarlogomez.com/)",

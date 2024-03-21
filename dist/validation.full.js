@@ -1,11 +1,11 @@
  // ----------------------------------------------------------------------------
  // Validation - A simple validation library that requires jQuery and Bootstrap Modal (2.3.3+)
- // v1.7.0 - released 2022-09-26 20:08
- // Updates to options, added backdrop. Added check prior to opening a modal to make sure to not show a backdrop if one is already present.
+ // v1.8.0 - released 2024-03-21 09:04
+ // Added ability to force a message to not render as a list using asList option and flip cancel button location using cancelButtonLast option.
  // Licensed under the MIT license.
  // https://github.com/GiancarloGomez/javascript.validation#readme
  // ----------------------------------------------------------------------------
- // Copyright (C) 2013-2022 Giancarlo Gomez <giancarlo.gomez@gmail.com> (https://giancarlogomez.com/)
+ // Copyright (C) 2013-2024 Giancarlo Gomez <giancarlo.gomez@gmail.com> (https://giancarlogomez.com/)
  // 
  // ----------------------------------------------------------------------------
 
@@ -64,17 +64,18 @@ function simpleValidation(form, doAlert) {
             message: "",
             err: [],
             checks: []
-        };
+        }, me = window.jQuery(this);
         o = validateForm(this);
-        o = window.jQuery.extend(o, $(this).data());
+        o = window.jQuery.extend(o, me.data());
         try {
-            var e = window[window.jQuery(this).data("extend-validation")];
+            var e = window[me.data("extend-validation")];
             if (typeof e === "function") {
-                o = e(window.jQuery(this), o);
+                o = e(me, o);
             }
         } catch (a) {}
         if (o.err.length) {
             o.form = this;
+            me.find("input:focus").blur();
             if (doAlert) {
                 window.alert("Attention:" + o.message.replace(/<li>/gm, "\n").replace(/<\/li>/gm, ""));
             } else {
@@ -171,7 +172,7 @@ function createDialogHeader(o) {
 }
 
 function createDialogBody(o) {
-    var bodyClass = o.noerror === false ? "text-error mb-0" : "", bodyStyle = "", asList = o.message.indexOf("<li>") !== -1 && o.message.indexOf("<ul>") === -1, tag = asList === true ? "ul" : "div", height = 0;
+    var bodyClass = o.noerror === false ? "text-error mb-0" : "", bodyStyle = "", asList = o.asList && o.message.indexOf("<li>") !== -1 && o.message.indexOf("<ul>") === -1, tag = asList === true ? "ul" : "div", height = 0;
     if (o.noheader === false) height += 70;
     if (o.nofooter === false) height += 70;
     if (getBootstrapVersion() >= 3) {
@@ -186,17 +187,17 @@ function createDialogBody(o) {
 }
 
 function createDialogFooter(o, withActions) {
-    var str = "", fa = getFontAwesomePrefix(), bsVersion = getBootstrapVersion(), hideClass = bsVersion >= 4 ? "d-none" : "hide", buttonMargin = bsVersion >= 5 ? "me-1" : bsVersion === 4 ? "mr-1" : "";
+    var str = "", fa = getFontAwesomePrefix(), bsVersion = getBootstrapVersion(), hideClass = bsVersion >= 4 ? "d-none" : "hide", buttonMargin = bsVersion >= 5 ? o.cancelButtonLast ? "me-1" : "ms-1" : bsVersion === 4 ? o.cancelButtonLast ? "mr-1" : "ml-1" : "";
     if (o.nofooter !== true) {
         str = '<div class="modal-footer">';
         if (o.customfooter !== "") {
             str += o.customfooter;
         } else if (withActions === true) {
             str += '<div class="' + hideClass + '"><button class="btn ' + o.confirmButtonColorClass + '" disabled="disabled"><i class="' + fa.required + fa.prefix + "spinner " + fa.prefix + 'spin"></i> Processing Request</button></div><div class="show">';
-            if (o.includeconfirmbtn === true) {
-                str += '<a href="#" class="btn btn-confirm ' + o.confirmButtonColorClass + " " + buttonMargin + '">' + o.confirmButtonText + "</a>";
-            }
-            str += '<a href="#" class="btn ' + o.cancelButtonColorClass + '" ' + getDismissModalAttribute() + ">" + o.cancelButtonText + "</a></div>";
+            if (!o.cancelButtonLast) str += '<a href="#" class="btn ' + o.cancelButtonColorClass + '" ' + getDismissModalAttribute() + ">" + o.cancelButtonText + "</a>";
+            if (o.includeconfirmbtn) str += '<a href="#" class="btn btn-confirm ' + o.confirmButtonColorClass + " " + buttonMargin + '">' + o.confirmButtonText + "</a>";
+            if (o.cancelButtonLast) str += '<a href="#" class="btn ' + o.cancelButtonColorClass + '" ' + getDismissModalAttribute() + ">" + o.cancelButtonText + "</a>";
+            str += "</div>";
         } else {
             str += '<a href="#" class="btn ' + o.confirmButtonColorClass + '" ' + getDismissModalAttribute() + ">" + o.confirmText + "</a>";
         }
@@ -207,11 +208,13 @@ function createDialogFooter(o, withActions) {
 
 function setDialogDefaults(o) {
     var defaults = {
+        asList: true,
         background: "",
         backdrop: true,
         callback: null,
         cancelButtonColorClass: "btn-danger",
         cancelButtonText: "No",
+        cancelButtonLast: false,
         confirmButtonColorClass: "btn-primary",
         confirmButtonText: "Yes",
         confirmText: "OK",

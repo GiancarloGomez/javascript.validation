@@ -75,26 +75,28 @@ function simpleValidation(form,doAlert){
     // continue
     window.jQuery(form).submit(function () {
         var o = {
-            message : '',
-            err     : [],
-            checks  : []
-        };
+                message : '',
+                err     : [],
+                checks  : []
+            },
+            me = window.jQuery(this);
         // loop thru each input
         o = validateForm(this);
         // add any settings that might exists in the forms data attributes
-        o = window.jQuery.extend( o, $(this).data() );
+        o = window.jQuery.extend( o, me.data() );
         // run extra validation if exists
         try{
-            var e = window[window.jQuery(this).data('extend-validation')];
+            var e = window[me.data('extend-validation')];
             if(typeof(e) === 'function'){
-                o = e(window.jQuery(this),o);
+                o = e(me,o);
             }
         }
         catch(a){/* ignore error */}
         // notification or submit
         if (o.err.length) {
             o.form = this;
-            // focus and select on required field
+            // blur an input that might be focused
+            me.find('input:focus').blur();
             if (doAlert){
                 window.alert('Attention:' + o.message.replace(/<li>/gm,'\n').replace(/<\/li>/gm,''));
             } else {
@@ -260,7 +262,7 @@ function createDialogHeader(o){
 function createDialogBody(o){
     var bodyClass   = (o.noerror === false ? 'text-error mb-0' :''),
         bodyStyle   = "",
-        asList      = o.message.indexOf('<li>') !== -1 && o.message.indexOf('<ul>') === -1,
+        asList      = o.asList && o.message.indexOf('<li>') !== -1 && o.message.indexOf('<ul>') === -1,
         tag         = asList === true ? 'ul' : 'div',
         height      = 0;
 
@@ -302,8 +304,8 @@ function createDialogFooter(o,withActions){
         fa  = getFontAwesomePrefix(),
         bsVersion = getBootstrapVersion(),
         hideClass =  bsVersion >= 4 ? 'd-none' : 'hide',
-        buttonMargin =  bsVersion >= 5 ? 'me-1' :
-                        bsVersion === 4 ? 'mr-1' :
+        buttonMargin =  bsVersion >= 5 ? ( o.cancelButtonLast ? 'me-1' : 'ms-1' ) :
+                        bsVersion === 4 ? ( o.cancelButtonLast ? 'mr-1' : 'ml-1' ) :
                         '';
 
     if (o.nofooter !== true){
@@ -315,12 +317,15 @@ function createDialogFooter(o,withActions){
         else if (withActions === true)
         {
             str +=  '<div class="' + hideClass + '"><button class="btn ' + o.confirmButtonColorClass + '" disabled="disabled"><i class="'+ fa.required + fa.prefix + 'spinner ' + fa.prefix + 'spin"></i> Processing Request</button></div><div class="show">';
-            // include confirm button
-            if (o.includeconfirmbtn === true) {
-                str +='<a href="#" class="btn btn-confirm ' + o.confirmButtonColorClass + ' ' + buttonMargin + '">' + o.confirmButtonText + '</a>';
-            }
             // cancel button
-            str += '<a href="#" class="btn ' + o.cancelButtonColorClass + '" ' + getDismissModalAttribute() + '>' + o.cancelButtonText + '</a></div>';
+            if ( !o.cancelButtonLast )
+                str += '<a href="#" class="btn ' + o.cancelButtonColorClass + '" ' + getDismissModalAttribute() + '>' + o.cancelButtonText + '</a>';
+            // include confirm button
+            if ( o.includeconfirmbtn )
+                str +='<a href="#" class="btn btn-confirm ' + o.confirmButtonColorClass + ' ' + buttonMargin + '">' + o.confirmButtonText + '</a>';
+            if ( o.cancelButtonLast )
+                str += '<a href="#" class="btn ' + o.cancelButtonColorClass + '" ' + getDismissModalAttribute() + '>' + o.cancelButtonText + '</a>';
+            str += '</div>';
         }
         else
         {
@@ -337,11 +342,13 @@ function createDialogFooter(o,withActions){
 function setDialogDefaults(o){
 
     var defaults = {
+            asList                  : true,             // this is used in createDialogBody to overwrite if the message should be a list regardless of content check
             background              : '',               // background color applied to modal-backdrop
             backdrop                : true,             // bs modal backdrop property - dostatic takes priority if sent in as true
             callback                : null,             // function to run on Action Dialog close
             cancelButtonColorClass  : 'btn-danger',     // Default class for Cancel Button
             cancelButtonText        : 'No',             // Default text for Cancel Button
+            cancelButtonLast        : false,            // Set to true to place Cancel Button last
             confirmButtonColorClass : 'btn-primary',    // Default class for Confirmation Button
             confirmButtonText       : 'Yes',            // Default text for Confirmation Button on Action Dialog
             confirmText             : 'OK',             // Default text for Confirmation Button on Regular Dialog
